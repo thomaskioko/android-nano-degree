@@ -26,14 +26,14 @@
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
         android:text="@string/button_movies"
-        android:paddingTop="10dp"
+        android:paddingTop="@dimen/margin_top_small"
         android:textColor="@android:color/white" />
 
     <Button
         android:id="@+id/buttonStock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/margin_top_small"
         android:background="@color/colorAccent"
         android:text="@string/button_stock"
         android:textColor="@android:color/white" />
@@ -42,7 +42,7 @@
         android:id="@+id/buttonBigger"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/margin_top_small"
         android:background="@color/colorAccent"
         android:text="@string/button_build"
         android:textColor="@android:color/white" />
@@ -51,7 +51,7 @@
         android:id="@+id/buttonMaterial"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/margin_top_small"
         android:background="@color/colorAccent"
         android:text="@string/button_material"
         android:textColor="@android:color/white" />
@@ -60,7 +60,7 @@
         android:id="@+id/buttonUbiquitous"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/margin_top_small"
         android:background="@color/colorAccent"
         android:text="@string/button_ubiquitous"
         android:textColor="@android:color/white" />
@@ -69,7 +69,7 @@
         android:id="@+id/buttonCapstone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/margin_top_small"
         android:background="@color/colorAccent"
         android:text="@string/button_capstone"
         android:textColor="@android:color/white" />
