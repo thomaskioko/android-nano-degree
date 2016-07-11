@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Sunshine</string>
+
+    <!-- Menu Strings -->
+    <string name="action_settings">Settings</string>
+    <string name="action_refresh">Refresh</string>
 </resources>
