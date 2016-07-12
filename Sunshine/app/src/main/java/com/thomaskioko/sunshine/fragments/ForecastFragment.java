@@ -1,8 +1,11 @@
 package com.thomaskioko.sunshine.fragments;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
@@ -13,10 +16,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.thomaskioko.sunshine.DetailActivity;
 import com.thomaskioko.sunshine.R;
+import com.thomaskioko.sunshine.SettingsActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +43,7 @@ import java.util.Locale;
 /**
  * @author Thomas Kioko
  */
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     ArrayAdapter<String> arrayAdapter;
 
@@ -74,6 +80,7 @@ public class ForecastFragment extends Fragment {
 
         //Bind the adapter to the listView
         listView.setAdapter(arrayAdapter);
+        listView.setOnItemClickListener(this);
 
 
         return rootView;
@@ -101,13 +108,49 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                //Execute the async task
-                new FetchWeatherTask().execute("94043");
+                fetchWeatherData();
+                return true;
+            case R.id.action_settings:
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *
+     */
+    private void fetchWeatherData() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        String location = sharedPreferences.getString(getString(R.string.pref_key_location), getString(R.string.pref_default_value_location));
+        String metricUnit = sharedPreferences.getString(getString(R.string.pref_key_temp), getString(R.string.pref_default_value_metric));
+
+        if(!location.equals("")){
+            new FetchWeatherTask().execute(location,metricUnit);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        fetchWeatherData();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+        String data = adapterView.getItemAtPosition(position).toString();
+
+        Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
+        detailIntent.putExtra(Intent.EXTRA_TEXT, data);
+        startActivity(detailIntent);
+
+    }
+
+    /**
+     *
+     */
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
@@ -115,6 +158,7 @@ public class ForecastFragment extends Fragment {
         @Override
         protected String[] doInBackground(String... params) {
 
+            //TODO:: Move Http implementation to seperate class
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -139,7 +183,7 @@ public class ForecastFragment extends Fragment {
 
                 Uri uri = Uri.parse(BASE_URL).buildUpon()
                         .appendQueryParameter(QUERY_PARAM, params[0])
-                        .appendQueryParameter(UNITS_PARAM, units)
+                        .appendQueryParameter(UNITS_PARAM, params[1])
                         .appendQueryParameter(DAYS_PARAM, String.valueOf(numberOfDays))
                         .appendQueryParameter(FORMAT_PARAM, format)
                         .appendQueryParameter(APP_ID, appId)
