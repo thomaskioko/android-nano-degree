@@ -4,4 +4,19 @@
     <!-- Menu Strings -->
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--Preference Values -->
+    <string name="pref_default_value_location" translatable="false">Nairobi, KE</string>
+    <string name="pref_default_value_metric" translatable="false">metric</string>
+
+    <!-- Preference Keys-->
+    <string name="pref_key_location" translatable="false">key_location</string>
+    <string name="pref_key_temp" translatable="false">pref_key_degree_metrics</string>
+
+    <!-- Preference Titles-->
+    <string name="pref_title_location">Location</string>
+    <string name="pref_title_metrics">Pick Temp Unit Of Measure</string>
 </resources>
