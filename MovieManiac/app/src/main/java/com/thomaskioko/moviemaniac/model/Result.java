@@ -1,5 +1,7 @@
 package com.thomaskioko.moviemaniac.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,19 +10,27 @@ import java.util.List;
  */
 public class Result {
 
+    @SerializedName(value = "poster_path")
     private String posterPath;
     private Boolean adult;
     private String overview;
+    @SerializedName(value = "release_date")
     private String releaseDate;
-    private List<Integer> genreIds = new ArrayList<Integer>();
+    @SerializedName(value = "genre_ids")
+    private List<Integer> genreIds = new ArrayList<>();
     private Integer id;
+    @SerializedName(value = "original_title")
     private String originalTitle;
+    @SerializedName(value = "original_language")
     private String originalLanguage;
     private String title;
+    @SerializedName(value = "backdrop_path")
     private String backdropPath;
     private Double popularity;
+    @SerializedName(value = "vote_count")
     private Integer voteCount;
     private Boolean video;
+    @SerializedName(value = "vote_average")
     private Double voteAverage;
 
     /**

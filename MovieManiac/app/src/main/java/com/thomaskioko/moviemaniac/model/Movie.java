@@ -1,5 +1,7 @@
 package com.thomaskioko.moviemaniac.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,9 @@ import java.util.List;
 public class Movie {
     private Integer page;
     private List<Result> results = new ArrayList<>();
+    @SerializedName(value = "total_results")
     private Integer totalResults;
+    @SerializedName(value = "total_pages")
     private Integer totalPages;
 
     /**
