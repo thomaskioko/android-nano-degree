@@ -84,7 +84,7 @@ public class ForecastFragment extends Fragment implements AdapterView.OnItemClic
      * to be called, you must have first called {@link #setHasOptionsMenu}.
      *
      * @param menu     The options menu in which you place your items.
-     * @param inflater
+     * @param inflater Menu inflater
      * @see #setHasOptionsMenu
      * @see #onPrepareOptionsMenu
      * @see #onOptionsItemSelected
