@@ -24,7 +24,6 @@
         </activity>
         <activity
             android:name=".ui.MovieDetailActivity"
-            android:label="@string/title_movie_detail"
             android:parentActivityName=".ui.MovieListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
