@@ -46,6 +46,7 @@ public class TmdbApiClient {
     private OkHttpClient okHttpClient() {
 
         return new OkHttpClient.Builder()
+                .addInterceptor(new AuthInterceptor())
                 .connectTimeout(ApplicationConstants.CONNECT_TIMEOUT, TimeUnit.SECONDS)
                 .writeTimeout(ApplicationConstants.WRITE_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(ApplicationConstants.READ_TIMEOUT, TimeUnit.SECONDS)
