@@ -3,25 +3,29 @@ package com.thomaskioko.moviemaniac.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 
-
+import com.bumptech.glide.Glide;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
-import com.thomaskioko.moviemaniac.model.DummyContent;
 import com.thomaskioko.moviemaniac.fragments.MovieDetailFragment;
 import com.thomaskioko.moviemaniac.model.Movie;
+import com.thomaskioko.moviemaniac.model.Result;
+import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -44,6 +48,9 @@ public class MovieListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
     private TmdbApiClient mTmdbApiClient;
+    private RecyclerView mRecyclerView;
+    private List<Result> mResultList = new ArrayList<>();
+    private static final String LOG_TAG = MovieListActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +63,15 @@ public class MovieListActivity extends AppCompatActivity {
 
         mTmdbApiClient = MovieManiacApplication.getTmdbApiClient();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        int NUMBER_OF_GRID_ITEMS = 3;
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), NUMBER_OF_GRID_ITEMS);
+        mRecyclerView = (RecyclerView) findViewById(R.id.movie_list);
+        assert mRecyclerView != null;
+        mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        View recyclerView = findViewById(R.id.movie_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        if (mResultList.size() == 0) {
+            getPopularMovies();
+        }
 
         if (findViewById(R.id.movie_detail_container) != null) {
             // The detail container view will be present only in the
@@ -78,17 +82,16 @@ public class MovieListActivity extends AppCompatActivity {
         }
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
-    }
+    public class MoviesRecyclerViewAdapter
+            extends RecyclerView.Adapter<MoviesRecyclerViewAdapter.ViewHolder> {
 
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+        private final List<Result> mResultList;
 
-        private final List<DummyContent.DummyItem> mValues;
-
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
-            mValues = items;
+        /**
+         * @param resultList
+         */
+        public MoviesRecyclerViewAdapter(List<Result> resultList) {
+            mResultList = resultList;
         }
 
         @Override
@@ -100,26 +103,29 @@ public class MovieListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            final Result movieResult = mResultList.get(position);
+
+            String imagePath = ApplicationConstants.TMDB_IMAGE_URL
+                    + ApplicationConstants.IMAGE_SIZE_185
+                    + movieResult.getPosterPath();
+
+            Glide.with(getApplicationContext())
+                    .load(imagePath)
+                    .centerCrop()
+                    .into(holder.mImageView);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    MovieManiacApplication.result = movieResult;
                     if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(MovieDetailFragment.ARG_ITEM_ID, holder.mItem.id);
                         MovieDetailFragment fragment = new MovieDetailFragment();
-                        fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.movie_detail_container, fragment)
                                 .commit();
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, MovieDetailActivity.class);
-                        intent.putExtra(MovieDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
                         context.startActivity(intent);
                     }
                 }
@@ -128,25 +134,20 @@ public class MovieListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return mResultList.size();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
+            public final ImageView mImageView;
 
+            /**
+             * @param view
+             */
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
+                mImageView = (ImageView) view.findViewById(R.id.imageView);
             }
         }
     }
@@ -155,16 +156,20 @@ public class MovieListActivity extends AppCompatActivity {
      * Method to get Top Rated movies
      */
     private void getTopRatedMovies() {
-        Call<List<Movie>> topRatedList = mTmdbApiClient.movieInterface().getTopRatedMovies();
-        topRatedList.enqueue(new Callback<List<Movie>>() {
+        Call<Movie> topRatedList = mTmdbApiClient.movieInterface().getTopRatedMovies();
+        topRatedList.enqueue(new Callback<Movie>() {
             @Override
-            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+            public void onResponse(Call<Movie> call, Response<Movie> response) {
 
+                for (Result result : response.body().getResults()) {
+                    mResultList.add(result);
+                    mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(mResultList));
+                }
             }
 
             @Override
-            public void onFailure(Call<List<Movie>> call, Throwable t) {
-
+            public void onFailure(Call<Movie> call, Throwable t) {
+                Log.e(LOG_TAG, "@getTopRatedMovies Error Message:: " + t.getLocalizedMessage());
             }
         });
     }
@@ -173,18 +178,40 @@ public class MovieListActivity extends AppCompatActivity {
      * Method to get Popular movies
      */
     private void getPopularMovies() {
-        Call<List<Movie>> topRatedList = mTmdbApiClient.movieInterface().getTopRatedMovies();
-        topRatedList.enqueue(new Callback<List<Movie>>() {
+        Call<Movie> topRatedList = mTmdbApiClient.movieInterface().getPopularMovies();
+        topRatedList.enqueue(new Callback<Movie>() {
             @Override
-            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
-
+            public void onResponse(Call<Movie> call, Response<Movie> response) {
+                for (Result result : response.body().getResults()) {
+                    mResultList.add(result);
+                    mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(mResultList));
+                }
             }
 
             @Override
-            public void onFailure(Call<List<Movie>> call, Throwable t) {
-
+            public void onFailure(Call<Movie> call, Throwable t) {
+                Log.e(LOG_TAG, "@getTopRatedMovies Error Message:: " + t.getLocalizedMessage());
             }
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_movies, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_popular:
+                getPopularMovies();
+                return true;
+            case R.id.action_top_rated:
+                getTopRatedMovies();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
