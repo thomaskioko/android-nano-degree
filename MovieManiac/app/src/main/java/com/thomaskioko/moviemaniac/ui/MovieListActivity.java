@@ -1,4 +1,4 @@
-package com.thomaskioko.moviemaniac;
+package com.thomaskioko.moviemaniac.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.model.DummyContent;
 import com.thomaskioko.moviemaniac.fragments.MovieDetailFragment;
 
