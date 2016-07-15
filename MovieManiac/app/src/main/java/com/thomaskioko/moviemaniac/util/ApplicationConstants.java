@@ -15,7 +15,23 @@ public class ApplicationConstants {
      * TMDB API
      * To get one {@see href="https://www.themoviedb.org/account/signup"}
      */
-    public static final String TMDB_API_KEY = "PUT_API_KEY_HERE";
+    public static final String TMDB_API_KEY = "df7ab6bd6119f184002f7065000d0fc8";
+    /**
+     * Image base Url
+     */
+    public static final String TMDB_IMAGE_URL = "http://image.tmdb.org/t/p/";
+    /**
+     * 185 Image size
+     */
+    public static final String IMAGE_SIZE_185 = "w185";
+    /**
+     * 780 Image size
+     */
+    public static final String IMAGE_SIZE_780 = "w780";
+    /**
+     * Original Image size
+     */
+    public static final String IMAGE_SIZE_ORIGINAL = "original";
     /**
      * Connection timeout duration
      */
