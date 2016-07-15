@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">MovieManiac</string>
     <string name="title_movie_detail">Movie Detail</string>
+
+    <!-- Menu Actions -->
+    <string name="menu_action_top_rated">Top Rated</string>
+    <string name="menu_action_popular">Popular</string>
 </resources>
