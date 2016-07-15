@@ -2,8 +2,6 @@ package com.thomaskioko.moviemaniac.api.interfaces;
 
 import com.thomaskioko.moviemaniac.model.Movie;
 
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.http.GET;
 
@@ -20,7 +18,7 @@ public interface MovieInterface {
      * @return JSON Result
      */
     @GET("top_rated?")
-    Call<List<Movie>> getTopRatedMovies();
+    Call<Movie> getTopRatedMovies();
 
     /**
      * Get popular movies.
@@ -28,5 +26,5 @@ public interface MovieInterface {
      * @return JSON Result
      */
     @GET("popular?")
-    Call<List<Movie>> getPopularMovies();
+    Call<Movie> getPopularMovies();
 }
