@@ -15,11 +15,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
+import com.thomaskioko.moviemaniac.api.TmdbApiClient;
 import com.thomaskioko.moviemaniac.model.DummyContent;
 import com.thomaskioko.moviemaniac.fragments.MovieDetailFragment;
+import com.thomaskioko.moviemaniac.model.Movie;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * An activity representing a list of Movies. This activity
@@ -36,6 +43,7 @@ public class MovieListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    private TmdbApiClient mTmdbApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +53,8 @@ public class MovieListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
+
+        mTmdbApiClient = MovieManiacApplication.getTmdbApiClient();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -140,4 +150,41 @@ public class MovieListActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Method to get Top Rated movies
+     */
+    private void getTopRatedMovies() {
+        Call<List<Movie>> topRatedList = mTmdbApiClient.movieInterface().getTopRatedMovies();
+        topRatedList.enqueue(new Callback<List<Movie>>() {
+            @Override
+            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Movie>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    /**
+     * Method to get Popular movies
+     */
+    private void getPopularMovies() {
+        Call<List<Movie>> topRatedList = mTmdbApiClient.movieInterface().getTopRatedMovies();
+        topRatedList.enqueue(new Callback<List<Movie>>() {
+            @Override
+            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Movie>> call, Throwable t) {
+
+            }
+        });
+    }
+
 }
