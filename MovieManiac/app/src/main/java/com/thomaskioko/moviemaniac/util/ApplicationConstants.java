@@ -10,7 +10,7 @@ public class ApplicationConstants {
     /**
      * API Endpoint
      */
-    public static final String END_POINT = "http://api.themoviedb.org/3/";
+    public static final String END_POINT = "http://api.themoviedb.org/3/movie/";
     /**
      * TMDB API
      * To get one {@see href="https://www.themoviedb.org/account/signup"}
