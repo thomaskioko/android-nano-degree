@@ -4,13 +4,12 @@ import com.thomaskioko.moviemaniac.model.Movie;
 
 import org.junit.Test;
 
-import java.util.List;
+import java.io.IOException;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * @author Thomas Kioko
@@ -18,40 +17,23 @@ import static org.junit.Assert.assertEquals;
 public class MovieApiTest extends BaseTestCase {
 
     @Test
-    public void getTopRatedMovies() {
+    public void getTopRatedMovies() throws IOException {
 
-        Call<List<Movie>> topRatedList = getTmdbApiClient().movieInterface().getTopRatedMovies();
-        topRatedList.enqueue(new Callback<List<Movie>>() {
-            @Override
-            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+        Call<Movie> topRatedList = getTmdbApiClient().movieInterface().getTopRatedMovies();
+        Response<Movie> movie = topRatedList.execute();
 
-                assertEquals(200, response.code());
-                System.out.print(response.code());
-            }
+        assertEquals(200, movie.code());
+        assertEquals(true, movie.isSuccessful());
 
-            @Override
-            public void onFailure(Call<List<Movie>> call, Throwable t) {
-
-            }
-        });
     }
 
     @Test
-    public void getPopularMovies() {
+    public void getPopularMovies() throws IOException {
 
-        Call<List<Movie>> topRatedList = getTmdbApiClient().movieInterface().getPopularMovies();
-        topRatedList.enqueue(new Callback<List<Movie>>() {
-            @Override
-            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+        Call<Movie> popularMovies = getTmdbApiClient().movieInterface().getPopularMovies();
+        Response<Movie> movie = popularMovies.execute();
 
-                assertEquals(200, response.code());
-                System.out.print(response.code());
-            }
-
-            @Override
-            public void onFailure(Call<List<Movie>> call, Throwable t) {
-
-            }
-        });
+        assertEquals(200, movie.code());
+        assertEquals(true, movie.isSuccessful());
     }
 }
