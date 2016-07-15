@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.thomaskioko.moviemaniac.MovieDetailActivity;
-import com.thomaskioko.moviemaniac.MovieListActivity;
+import com.thomaskioko.moviemaniac.ui.MovieDetailActivity;
+import com.thomaskioko.moviemaniac.ui.MovieListActivity;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.model.DummyContent;
 
