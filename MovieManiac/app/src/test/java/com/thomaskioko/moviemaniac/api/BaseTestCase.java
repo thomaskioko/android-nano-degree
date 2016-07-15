@@ -1,7 +1,6 @@
 package com.thomaskioko.moviemaniac.api;
 
 import org.junit.BeforeClass;
-import org.mockito.Mock;
 
 /**
  * @author Thomas Kioko
@@ -9,7 +8,6 @@ import org.mockito.Mock;
 public abstract class BaseTestCase {
 
     private static final boolean DEBUG = true;
-    @Mock
     private final static TmdbApiClient tmdbApiClient = new TmdbApiClient();
 
     @BeforeClass
