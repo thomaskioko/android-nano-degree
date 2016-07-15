@@ -3,6 +3,7 @@ package com.thomaskioko.moviemaniac;
 import android.app.Application;
 
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
+import com.thomaskioko.moviemaniac.model.Result;
 
 /**
  * Application class.
@@ -12,6 +13,7 @@ import com.thomaskioko.moviemaniac.api.TmdbApiClient;
 public class MovieManiacApplication extends Application {
 
     private static TmdbApiClient tmdbApiClient = new TmdbApiClient();
+    public static Result result;
 
     @Override
     public void onCreate() {
@@ -24,5 +26,12 @@ public class MovieManiacApplication extends Application {
      */
     public static TmdbApiClient getTmdbApiClient() {
         return tmdbApiClient;
+    }
+
+    /**
+     * @return
+     */
+    public static Result getResult() {
+        return result;
     }
 }
