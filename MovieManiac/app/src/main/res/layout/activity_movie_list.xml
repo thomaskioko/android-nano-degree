@@ -21,12 +21,21 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:progressDrawable="@drawable/circular_drawable"
+            android:layout_centerHorizontal="true"
+            />
         <include layout="@layout/movie_list" />
-    </FrameLayout>
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
