@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
@@ -28,6 +29,8 @@ import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,8 +50,13 @@ public class MovieListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    @Bind(R.id.movie_list)
+    RecyclerView mRecyclerView;
+    @Bind(R.id.progressBar)
+    ProgressBar mProgressBar;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
     private TmdbApiClient mTmdbApiClient;
-    private RecyclerView mRecyclerView;
     private List<Result> mResultList = new ArrayList<>();
     private static final String LOG_TAG = MovieListActivity.class.getSimpleName();
 
@@ -56,8 +64,8 @@ public class MovieListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
+        ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
@@ -65,7 +73,6 @@ public class MovieListActivity extends AppCompatActivity {
 
         int NUMBER_OF_GRID_ITEMS = 3;
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), NUMBER_OF_GRID_ITEMS);
-        mRecyclerView = (RecyclerView) findViewById(R.id.movie_list);
         assert mRecyclerView != null;
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
@@ -156,11 +163,13 @@ public class MovieListActivity extends AppCompatActivity {
      * Method to get Top Rated movies
      */
     private void getTopRatedMovies() {
+        mProgressBar.setVisibility(View.VISIBLE);
         Call<Movie> topRatedList = mTmdbApiClient.movieInterface().getTopRatedMovies();
         topRatedList.enqueue(new Callback<Movie>() {
             @Override
             public void onResponse(Call<Movie> call, Response<Movie> response) {
 
+                mProgressBar.setVisibility(View.GONE);
                 for (Result result : response.body().getResults()) {
                     mResultList.add(result);
                     mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(mResultList));
@@ -169,6 +178,7 @@ public class MovieListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Movie> call, Throwable t) {
+                mProgressBar.setVisibility(View.GONE);
                 Log.e(LOG_TAG, "@getTopRatedMovies Error Message:: " + t.getLocalizedMessage());
             }
         });
@@ -178,10 +188,12 @@ public class MovieListActivity extends AppCompatActivity {
      * Method to get Popular movies
      */
     private void getPopularMovies() {
+        mProgressBar.setVisibility(View.VISIBLE);
         Call<Movie> topRatedList = mTmdbApiClient.movieInterface().getPopularMovies();
         topRatedList.enqueue(new Callback<Movie>() {
             @Override
             public void onResponse(Call<Movie> call, Response<Movie> response) {
+                mProgressBar.setVisibility(View.GONE);
                 for (Result result : response.body().getResults()) {
                     mResultList.add(result);
                     mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(mResultList));
@@ -190,6 +202,7 @@ public class MovieListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Movie> call, Throwable t) {
+                mProgressBar.setVisibility(View.GONE);
                 Log.e(LOG_TAG, "@getTopRatedMovies Error Message:: " + t.getLocalizedMessage());
             }
         });
