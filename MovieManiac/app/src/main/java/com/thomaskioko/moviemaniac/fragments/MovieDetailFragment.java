@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.model.Result;
@@ -44,6 +45,10 @@ public class MovieDetailFragment extends Fragment {
     TextView mMoviePlot;
     @Bind(R.id.movie_detail_thumbnail)
     ImageView mThumbnail;
+    @Bind(R.id.movie_detail_rating)
+    TextView mMovieRating;
+    @Bind(R.id.circularProgressBar)
+    CircularProgressBar mCircularProgressBar;
     private Result mMovieResult;
 
     /**
@@ -83,9 +88,11 @@ public class MovieDetailFragment extends Fragment {
                                     public void onGenerated(Palette palette) {
                                         if (palette.getDarkVibrantSwatch() != null) {
                                             mRelativeLayout.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
+                                            mCircularProgressBar.setColor(palette.getDarkVibrantSwatch().getRgb());
 
                                         } else if (palette.getMutedSwatch() != null) {
                                             mRelativeLayout.setBackgroundColor(palette.getMutedSwatch().getRgb());
+                                            mCircularProgressBar.setColor(palette.getMutedSwatch().getRgb());
                                         }
                                     }
                                 });
@@ -112,7 +119,10 @@ public class MovieDetailFragment extends Fragment {
                 .into(mThumbnail);
 
         mMoviePlot.setText(mMovieResult.getOverview());
-        mMovieYear.setText(mMovieResult.getReleaseDate());
+        mMovieYear.setText(getString(R.string.placeholder_release_year, mMovieResult.getReleaseDate()));
+        mMovieRating.setText(String.valueOf(mMovieResult.getVoteAverage()));
+        float rating = mMovieResult.getVoteAverage().floatValue() * 10;
+        mCircularProgressBar.setProgressWithAnimation(rating);
 
         return rootView;
     }
