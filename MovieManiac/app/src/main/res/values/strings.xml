@@ -6,5 +6,6 @@
     <string name="menu_action_top_rated">Top Rated</string>
     <string name="menu_action_popular">Popular</string>
 
-    <!-- -->
+    <!-- Placeholders-->
+    <string name="placeholder_release_year">Release Year: %1$S</string>
 </resources>
