@@ -95,7 +95,7 @@ public class MovieListActivity extends AppCompatActivity {
         private final List<Result> mResultList;
 
         /**
-         * @param resultList
+         * @param resultList {@link Result} A list of Movie Results
          */
         public MoviesRecyclerViewAdapter(List<Result> resultList) {
             mResultList = resultList;
@@ -149,7 +149,7 @@ public class MovieListActivity extends AppCompatActivity {
             public final ImageView mImageView;
 
             /**
-             * @param view
+             * @param view {@link View}
              */
             public ViewHolder(View view) {
                 super(view);
@@ -163,6 +163,8 @@ public class MovieListActivity extends AppCompatActivity {
      * Method to get Top Rated movies
      */
     private void getTopRatedMovies() {
+        mResultList.clear();
+        mRecyclerView.setAdapter(null);
         mProgressBar.setVisibility(View.VISIBLE);
         Call<Movie> topRatedList = mTmdbApiClient.movieInterface().getTopRatedMovies();
         topRatedList.enqueue(new Callback<Movie>() {
@@ -188,6 +190,8 @@ public class MovieListActivity extends AppCompatActivity {
      * Method to get Popular movies
      */
     private void getPopularMovies() {
+        mResultList.clear();
+        mRecyclerView.setAdapter(null);
         mProgressBar.setVisibility(View.VISIBLE);
         Call<Movie> topRatedList = mTmdbApiClient.movieInterface().getPopularMovies();
         topRatedList.enqueue(new Callback<Movie>() {

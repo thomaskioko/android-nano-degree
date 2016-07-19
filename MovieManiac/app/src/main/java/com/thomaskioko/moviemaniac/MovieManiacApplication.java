@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
 import com.thomaskioko.moviemaniac.model.Result;
+import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 
 /**
  * Application class.
@@ -18,7 +19,7 @@ public class MovieManiacApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        tmdbApiClient.setIsDebug(true);
+        tmdbApiClient.setIsDebug(ApplicationConstants.DEBUG);
     }
 
     /**
