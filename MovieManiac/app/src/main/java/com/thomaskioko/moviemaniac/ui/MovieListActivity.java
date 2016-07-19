@@ -21,7 +21,7 @@ import com.bumptech.glide.Glide;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
-import com.thomaskioko.moviemaniac.fragments.MovieDetailFragment;
+import com.thomaskioko.moviemaniac.ui.fragments.MovieDetailFragment;
 import com.thomaskioko.moviemaniac.model.Movie;
 import com.thomaskioko.moviemaniac.model.Result;
 import com.thomaskioko.moviemaniac.util.ApplicationConstants;

@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.thomaskioko.moviemaniac.R;
-import com.thomaskioko.moviemaniac.fragments.MovieDetailFragment;
+import com.thomaskioko.moviemaniac.ui.fragments.MovieDetailFragment;
 
 /**
  * An activity representing a single Movie detail screen. This
