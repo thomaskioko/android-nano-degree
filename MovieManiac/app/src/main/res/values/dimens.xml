@@ -8,5 +8,23 @@
     <!-- Image Margins -->
     <dimen name="image_margin_micro">2dp</dimen>
 
+    <!-- ImageView Margin-->
     <dimen name="grid_image_view">160dp</dimen>
+    <dimen name="image_view_height_large">100dp</dimen>
+
+    <dimen name="margin_mini">10dp</dimen>
+    <dimen name="margin_micro">5dp</dimen>
+
+    <!-- Cardview dimensions-->
+    <dimen name="card_view_corner_radius_micro">4dp</dimen>
+    <dimen name="margin_card_view_height">140dp</dimen>
+
+    <!-- Text Size -->
+    <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="margin_large">20dp</dimen>
+    <dimen name="margin_extra_large">25dp</dimen>
+
+    <!-- ProgressBar dimensions-->
+    <dimen name="progress_bar_width">90dp</dimen>
+    <dimen name="progress_bar_height">100dp</dimen>
 </resources>
