@@ -1,4 +1,4 @@
-package com.thomaskioko.moviemaniac.fragments;
+package com.thomaskioko.moviemaniac.ui.fragments;
 
 import android.app.Activity;
 import android.graphics.Bitmap;

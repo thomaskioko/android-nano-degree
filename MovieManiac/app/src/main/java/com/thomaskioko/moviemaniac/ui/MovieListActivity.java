@@ -1,30 +1,23 @@
 package com.thomaskioko.moviemaniac.ui;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.bumptech.glide.Glide;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
-import com.thomaskioko.moviemaniac.fragments.MovieDetailFragment;
 import com.thomaskioko.moviemaniac.model.Movie;
 import com.thomaskioko.moviemaniac.model.Result;
-import com.thomaskioko.moviemaniac.util.ApplicationConstants;
+import com.thomaskioko.moviemaniac.ui.adapters.MoviesRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,76 +82,6 @@ public class MovieListActivity extends AppCompatActivity {
         }
     }
 
-    public class MoviesRecyclerViewAdapter
-            extends RecyclerView.Adapter<MoviesRecyclerViewAdapter.ViewHolder> {
-
-        private final List<Result> mResultList;
-
-        /**
-         * @param resultList {@link Result} A list of Movie Results
-         */
-        public MoviesRecyclerViewAdapter(List<Result> resultList) {
-            mResultList = resultList;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.movie_list_content, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            final Result movieResult = mResultList.get(position);
-
-            String imagePath = ApplicationConstants.TMDB_IMAGE_URL
-                    + ApplicationConstants.IMAGE_SIZE_185
-                    + movieResult.getPosterPath();
-
-            Glide.with(getApplicationContext())
-                    .load(imagePath)
-                    .centerCrop()
-                    .into(holder.mImageView);
-
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MovieManiacApplication.result = movieResult;
-                    if (mTwoPane) {
-                        MovieDetailFragment fragment = new MovieDetailFragment();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.movie_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, MovieDetailActivity.class);
-                        context.startActivity(intent);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mResultList.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final ImageView mImageView;
-
-            /**
-             * @param view {@link View}
-             */
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                mImageView = (ImageView) view.findViewById(R.id.imageView);
-            }
-        }
-    }
-
     /**
      * Method to get Top Rated movies
      */
@@ -174,7 +97,8 @@ public class MovieListActivity extends AppCompatActivity {
                 mProgressBar.setVisibility(View.GONE);
                 for (Result result : response.body().getResults()) {
                     mResultList.add(result);
-                    mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(mResultList));
+                    mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(getApplicationContext(),
+                            getSupportFragmentManager(), mTwoPane, mResultList));
                 }
             }
 
@@ -200,7 +124,8 @@ public class MovieListActivity extends AppCompatActivity {
                 mProgressBar.setVisibility(View.GONE);
                 for (Result result : response.body().getResults()) {
                     mResultList.add(result);
-                    mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(mResultList));
+                    mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(getApplicationContext(),
+                            getSupportFragmentManager(), mTwoPane, mResultList));
                 }
             }
 
