@@ -61,6 +61,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         Glide.with(mContext)
                 .load(imagePath)
                 .centerCrop()
+                .error(R.mipmap.ic_launcher)
                 .into(holder.mImageView);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
