@@ -24,6 +24,12 @@ import com.thomaskioko.moviemaniac.ui.MovieDetailActivity;
 import com.thomaskioko.moviemaniac.ui.MovieListActivity;
 import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import java.util.Locale;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -39,14 +45,16 @@ public class MovieDetailFragment extends Fragment {
     RelativeLayout mRelativeLayout;
     @Bind(R.id.movie_detail_year)
     TextView mMovieYear;
-    @Bind(R.id.movie_detail_pg)
-    TextView mMoviePg;
     @Bind(R.id.movie_detail_plot)
     TextView mMoviePlot;
     @Bind(R.id.movie_detail_thumbnail)
     ImageView mThumbnail;
     @Bind(R.id.movie_detail_rating)
     TextView mMovieRating;
+    @Bind(R.id.movie_detail_popularity)
+    TextView mMoviePopularity;
+    @Bind(R.id.movie_detail_votes)
+    TextView mMovieVote;
     @Bind(R.id.circularProgressBar)
     CircularProgressBar mCircularProgressBar;
     private Result mMovieResult;
@@ -69,8 +77,9 @@ public class MovieDetailFragment extends Fragment {
         if (appBarLayout != null) {
             if (mMovieResult != null) {
                 appBarLayout.setTitle(mMovieResult.getTitle());
-                ImageView imageView = (ImageView) activity.findViewById(R.id.ivBigImage);
+                final ImageView imageView = (ImageView) activity.findViewById(R.id.ivBigImage);
 
+                //Image URL
                 String imagePath = ApplicationConstants.TMDB_IMAGE_URL
                         + ApplicationConstants.IMAGE_SIZE_780
                         + mMovieResult.getBackdropPath();
@@ -81,18 +90,24 @@ public class MovieDetailFragment extends Fragment {
                         .asBitmap()
                         .into(new BitmapImageViewTarget(imageView) {
                             @Override
-                            public void onResourceReady(Bitmap bitmap, GlideAnimation anim) {
-                                super.onResourceReady(bitmap, anim);
+                            public void onResourceReady(Bitmap bitmap, final GlideAnimation glideAnimation) {
+                                super.onResourceReady(bitmap, glideAnimation);
                                 Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                                     @Override
                                     public void onGenerated(Palette palette) {
+
                                         if (palette.getDarkVibrantSwatch() != null) {
                                             mRelativeLayout.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
-                                            mCircularProgressBar.setColor(palette.getDarkVibrantSwatch().getRgb());
+                                            mCircularProgressBar.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
 
                                         } else if (palette.getMutedSwatch() != null) {
                                             mRelativeLayout.setBackgroundColor(palette.getMutedSwatch().getRgb());
-                                            mCircularProgressBar.setColor(palette.getMutedSwatch().getRgb());
+                                            mCircularProgressBar.setBackgroundColor(palette.getMutedSwatch().getRgb());
+                                        }
+                                        if (palette.getLightVibrantSwatch() != null) {
+                                            mCircularProgressBar.setColor(palette.getLightVibrantSwatch().getRgb());
+                                        } else if (palette.getLightMutedSwatch() != null) {
+                                            mCircularProgressBar.setColor(palette.getLightMutedSwatch().getRgb());
                                         }
                                     }
                                 });
@@ -108,6 +123,7 @@ public class MovieDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.movie_detail, container, false);
         ButterKnife.bind(this, rootView);
 
+        //Image path
         String imagePath = ApplicationConstants.TMDB_IMAGE_URL
                 + ApplicationConstants.IMAGE_SIZE_185
                 + mMovieResult.getPosterPath();
@@ -118,10 +134,20 @@ public class MovieDetailFragment extends Fragment {
                 .centerCrop()
                 .into(mThumbnail);
 
-        mMoviePlot.setText(mMovieResult.getOverview());
-        mMovieYear.setText(getString(R.string.placeholder_release_year, mMovieResult.getReleaseDate()));
-        mMovieRating.setText(String.valueOf(mMovieResult.getVoteAverage()));
         float rating = mMovieResult.getVoteAverage().floatValue() * 10;
+        float popularity = mMovieResult.getPopularity().intValue();
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+                .withLocale(Locale.getDefault());
+
+        //Get the year from the release date.
+        LocalDate date = formatter.parseLocalDate(mMovieResult.getReleaseDate());
+
+        mMoviePlot.setText(mMovieResult.getOverview());
+        mMovieYear.setText(String.valueOf(date.getYear()));
+        mMovieRating.setText(String.valueOf(mMovieResult.getVoteAverage()));
+        mMoviePopularity.setText(String.valueOf(popularity));
+        mMovieVote.setText(String.valueOf(mMovieResult.getVoteCount()));
         mCircularProgressBar.setProgressWithAnimation(rating);
 
         return rootView;
