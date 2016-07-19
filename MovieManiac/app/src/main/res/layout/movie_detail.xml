@@ -77,7 +77,7 @@
                     android:layout_marginEnd="@dimen/margin_micro"
                     android:text="@string/tv_release_year"
                     android:textColor="@android:color/white"
-                    android:textSize="@dimen/text_size_medium"
+                    android:textSize="@dimen/text_size_small"
                     android:textStyle="bold" />
 
                 <TextView
@@ -104,10 +104,10 @@
                     android:id="@+id/popularity_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
+                    android:layout_marginEnd="@dimen/margin_micro"
                     android:text="@string/tv_title_popularity"
                     android:textColor="@android:color/white"
-                    android:textSize="@dimen/text_size_medium"
+                    android:textSize="@dimen/text_size_small"
                     android:textStyle="bold" />
 
                 <TextView
@@ -135,7 +135,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tv_title_vote_count"
                     android:textColor="@android:color/white"
-                    android:textSize="@dimen/text_size_medium"
+                    android:textSize="@dimen/text_size_small"
                     android:textStyle="bold" />
 
                 <TextView
