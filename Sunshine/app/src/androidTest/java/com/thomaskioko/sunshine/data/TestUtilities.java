@@ -1,8 +1,10 @@
 package com.thomaskioko.sunshine.data;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -13,21 +15,29 @@ import com.thomaskioko.sunshine.utils.PollingCheck;
 import java.util.Map;
 import java.util.Set;
 
-/*
-    Students: These are functions and some test data to make it easier to test your database and
-    Content Provider.  Note that you'll want your WeatherContract class to exactly match the one
-    in our solution to use these as-given.
+/**
+ * @author Thomas Kioko
  */
 public class TestUtilities extends AndroidTestCase {
     static final String TEST_LOCATION = "99705";
     static final long TEST_DATE = 1419033600L;  // December 20th, 2014
 
+    /**
+     * @param error          Error Message
+     * @param valueCursor    {@link Cursor}
+     * @param expectedValues {@link ContentValues}
+     */
     static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues) {
         assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
         validateCurrentRecord(error, valueCursor, expectedValues);
         valueCursor.close();
     }
 
+    /**
+     * @param error          Error Message
+     * @param valueCursor    {@link Cursor}
+     * @param expectedValues {@link ContentValues}
+     */
     static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues) {
         Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
         for (Map.Entry<String, Object> entry : valueSet) {
@@ -41,8 +51,9 @@ public class TestUtilities extends AndroidTestCase {
         }
     }
 
-    /*
-        Students: Use this to create some default weather values for your database tests.
+    /**
+     * @param locationRowId Row Id
+     * @return {@link ContentValues}
      */
     static ContentValues createWeatherValues(long locationRowId) {
         ContentValues weatherValues = new ContentValues();
@@ -60,39 +71,38 @@ public class TestUtilities extends AndroidTestCase {
         return weatherValues;
     }
 
-    /*
-        Students: You can uncomment this helper function once you have finished creating the
-        LocationEntry part of the WeatherContract.
+    /**
+     * @return {@link ContentValues}
      */
-//    static ContentValues createNorthPoleLocationValues() {
-//        // Create a new map of values, where column names are the keys
-//        ContentValues testValues = new ContentValues();
-//        testValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, TEST_LOCATION);
-//        testValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, "North Pole");
-//        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, 64.7488);
-//        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, -147.353);
-//
-//        return testValues;
-//    }
+    static ContentValues createNorthPoleLocationValues() {
+        // Create a new map of values, where column names are the keys
+        ContentValues testValues = new ContentValues();
+        testValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, TEST_LOCATION);
+        testValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, "North Pole");
+        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, 64.7488);
+        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, -147.353);
 
-    /*
-        Students: You can uncomment this function once you have finished creating the
-        LocationEntry part of the WeatherContract as well as the WeatherDbHelper.
+        return testValues;
+    }
+
+    /**
+     * @param context Application Context
+     * @return Row ID
      */
-//    static long insertNorthPoleLocationValues(Context context) {
-//        // insert our test records into the database
-//        WeatherDbHelper dbHelper = new WeatherDbHelper(context);
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
-//
-//        long locationRowId;
-//        locationRowId = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, testValues);
-//
-//        // Verify we got a row back.
-//        assertTrue("Error: Failure to insert North Pole Location Values", locationRowId != -1);
-//
-//        return locationRowId;
-//    }
+    static long insertNorthPoleLocationValues(Context context) {
+        // insert our test records into the database
+        WeatherDbHelper dbHelper = new WeatherDbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
+
+        long locationRowId;
+        locationRowId = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, testValues);
+
+        // Verify we got a row back.
+        assertTrue("Error: Failure to insert North Pole Location Values", locationRowId != -1);
+
+        return locationRowId;
+    }
 
     /*
         Students: The functions we provide inside of TestProvider use this utility class to test
@@ -103,7 +113,7 @@ public class TestUtilities extends AndroidTestCase {
         correct Uri is returned.
      */
     static class TestContentObserver extends ContentObserver {
-        final HandlerThread mHT;
+        final HandlerThread mHandlerThread;
         boolean mContentChanged;
 
         static TestContentObserver getTestContentObserver() {
@@ -112,9 +122,14 @@ public class TestUtilities extends AndroidTestCase {
             return new TestContentObserver(ht);
         }
 
-        private TestContentObserver(HandlerThread ht) {
-            super(new Handler(ht.getLooper()));
-            mHT = ht;
+        /**
+         * Constructor.
+         *
+         * @param handlerThread
+         */
+        private TestContentObserver(HandlerThread handlerThread) {
+            super(new Handler(handlerThread.getLooper()));
+            mHandlerThread = handlerThread;
         }
 
         // On earlier versions of Android, this onChange method is called
@@ -139,10 +154,13 @@ public class TestUtilities extends AndroidTestCase {
                     return mContentChanged;
                 }
             }.run();
-            mHT.quit();
+            mHandlerThread.quit();
         }
     }
 
+    /**
+     * @return {@link TestContentObserver}
+     */
     static TestContentObserver getTestContentObserver() {
         return TestContentObserver.getTestContentObserver();
     }
