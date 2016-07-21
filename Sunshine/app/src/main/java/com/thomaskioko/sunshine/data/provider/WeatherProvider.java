@@ -39,10 +39,10 @@ public class WeatherProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private WeatherDbHelper mOpenHelper;
 
-    static final int WEATHER = 100;
-    static final int WEATHER_WITH_LOCATION = 101;
-    static final int WEATHER_WITH_LOCATION_AND_DATE = 102;
-    static final int LOCATION = 300;
+    public static final int WEATHER = 100;
+    public static final int WEATHER_WITH_LOCATION = 101;
+    public static final int WEATHER_WITH_LOCATION_AND_DATE = 102;
+    public static final int LOCATION = 300;
 
     private static final SQLiteQueryBuilder sWeatherByLocationSettingQueryBuilder;
 
@@ -85,14 +85,13 @@ public class WeatherProvider extends ContentProvider {
     }
 
 
-
     /*
         Students: Here is where you need to create the UriMatcher. This UriMatcher will
         match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE,
         and LOCATION integer constants defined above.  You can test this by uncommenting the
         testUriMatcher test within TestUriMatcher.
      */
-    static UriMatcher buildUriMatcher() {
+    public static UriMatcher buildUriMatcher() {
 
         final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = WeatherContract.CONTENT_AUTHORITY;
@@ -184,29 +183,54 @@ public class WeatherProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case LOCATION: {
+                normalizeDate(values);
+                long _id = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = WeatherContract.LocationEntry.buildLocationUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+        //Register a content observer to watch for changes on the uri and notify the UI when th cursor changes
         getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
     }
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        // Student: Start by getting a writable database
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsDeleted;
 
-        // Student: Use the uriMatcher to match the WEATHER and LOCATION URI's we are going to
-        // handle.  If it doesn't match these, throw an UnsupportedOperationException.
+        switch (match) {
+            case WEATHER: {
+                rowsDeleted = db.delete(WeatherContract.WeatherEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            }
+            case LOCATION: {
+                rowsDeleted = db.delete(WeatherContract.LocationEntry.TABLE_NAME, selection, selectionArgs);
 
-        // Student: A null value deletes all rows.  In my implementation of this, I only notified
-        // the uri listeners (using the content resolver) if the rowsDeleted != 0 or the selection
-        // is null.
-        // Oh, and you should notify the listeners here.
-
-        // Student: return the actual rows deleted
-        return 0;
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        if (rowsDeleted != 0) {
+            //Register a content observer to watch for changes on the uri and notify the UI when th cursor changes
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
+    /**
+     * @param values
+     */
     private void normalizeDate(ContentValues values) {
         // normalize the date value
         if (values.containsKey(WeatherContract.WeatherEntry.COLUMN_DATE)) {
@@ -217,9 +241,37 @@ public class WeatherProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        // Student: This is a lot like the delete function.  We return the number of rows impacted
-        // by the update.
-        return 0;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsUdpated;
+
+        switch (match) {
+            case WEATHER: {
+                rowsUdpated = db.update(WeatherContract.WeatherEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs
+                );
+                break;
+            }
+            case LOCATION: {
+                rowsUdpated = db.update(WeatherContract.LocationEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs
+                );
+
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        //Register a content observer to watch for changes on the uri and notify the UI when th cursor changes
+        if (rowsUdpated != 0) {
+            //Register a content observer to watch for changes on the uri and notify the UI when th cursor changes
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsUdpated;
     }
 
     @Override
@@ -312,7 +364,6 @@ public class WeatherProvider extends ContentProvider {
     }
 
     /**
-     *
      * @param projection
      * @param selection
      * @param selectionArgs
@@ -332,7 +383,6 @@ public class WeatherProvider extends ContentProvider {
     }
 
     /**
-     *
      * @param projection
      * @param selection
      * @param selectionArgs
