@@ -23,6 +23,10 @@
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity" />
+        
+        <provider
+            android:authorities="com.thomaskioko.sunshine"
+            android:name=".data.provider.WeatherProvider"/>
     </application>
 
 </manifest>
