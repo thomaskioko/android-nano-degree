@@ -8,17 +8,20 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.test.AndroidTestCase;
 
 import com.thomaskioko.sunshine.utils.PollingCheck;
 
 import java.util.Map;
 import java.util.Set;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
 /**
  * @author Thomas Kioko
  */
-public class TestUtilities extends AndroidTestCase {
+public class TestUtilities {
     static final String TEST_LOCATION = "99705";
     static final long TEST_DATE = 1419033600L;  // December 20th, 2014
 
