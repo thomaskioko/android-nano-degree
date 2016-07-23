@@ -19,7 +19,7 @@ import android.annotation.TargetApi;
 import android.database.Cursor;
 import android.test.AndroidTestCase;
 
-import com.thomaskioko.sunshine.data.tasks.FetchWeatherTask;
+import com.thomaskioko.sunshine.net.JsonParser;
 
 public class TestFetchWeatherTask extends AndroidTestCase{
     static final String ADD_LOCATION_SETTING = "Sunnydale, CA";
@@ -39,8 +39,8 @@ public class TestFetchWeatherTask extends AndroidTestCase{
                 WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
                 new String[]{ADD_LOCATION_SETTING});
 
-        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getContext(), null);
-        long locationId = fetchWeatherTask.addLocation(ADD_LOCATION_SETTING, ADD_LOCATION_CITY,
+        JsonParser jsonParser = new JsonParser(getContext());
+        long locationId = jsonParser.addLocation(ADD_LOCATION_SETTING, ADD_LOCATION_CITY,
                 ADD_LOCATION_LAT, ADD_LOCATION_LON);
 
         // does addLocation return a valid record ID?
@@ -84,7 +84,7 @@ public class TestFetchWeatherTask extends AndroidTestCase{
                     locationCursor.moveToNext());
 
             // add the location again
-            long newLocationId = fetchWeatherTask.addLocation(ADD_LOCATION_SETTING, ADD_LOCATION_CITY,
+            long newLocationId = jsonParser.addLocation(ADD_LOCATION_SETTING, ADD_LOCATION_CITY,
                     ADD_LOCATION_LAT, ADD_LOCATION_LON);
 
             assertEquals("Error: inserting a location again should return the same ID", locationId, newLocationId);

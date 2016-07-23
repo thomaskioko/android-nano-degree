@@ -12,11 +12,12 @@
 
     <!--Preference Values -->
     <string name="pref_default_value_location" translatable="false">Nairobi, KE</string>
+    <!-- Value in SharedPreferences for metric temperature unit option [CHAR LIMIT=NONE] -->
     <string name="pref_default_value_metric" translatable="false">metric</string>
 
     <!-- Preference Keys-->
     <string name="pref_key_location" translatable="false">key_location</string>
-    <string name="pref_key_temp" translatable="false">pref_key_degree_metrics</string>
+    <string name="pref_key_units" translatable="false">pref_key_degree_metrics</string>
 
     <!-- Preference Titles-->
     <string name="pref_title_location">Location</string>
@@ -25,23 +26,8 @@
     <!-- Label for the location preference [CHAR LIMIT=30] -->
     <string name="pref_location_label">Location</string>
 
-    <!-- Key name for storing location in SharedPreferences [CHAR LIMIT=NONE] -->
-    <string name="pref_location_key" translatable="false">location</string>
-
-    <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
-    <string name="pref_location_default" translatable="false">94043</string>
-
-    <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
-    <string name="pref_units_label">Temperature Units</string>
-
     <!-- Label for metric option in temperature unit preference [CHAR LIMIT=25] -->
     <string name="pref_units_label_metric">Metric</string>
-
-    <!-- Label for imperial option in temperature unit preference [CHAR LIMIT=25] -->
-    <string name="pref_units_label_imperial">Imperial</string>
-
-    <!-- Key name for temperature unit preference in SharedPreferences [CHAR LIMIT=NONE] -->
-    <string name="pref_units_key" translatable="false">units</string>
 
     <!-- Value in SharedPreferences for metric temperature unit option [CHAR LIMIT=NONE] -->
     <string name="pref_units_metric" translatable="false">metric</string>

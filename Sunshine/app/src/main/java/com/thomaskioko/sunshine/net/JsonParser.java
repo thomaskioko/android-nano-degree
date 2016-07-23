@@ -238,7 +238,7 @@ public class JsonParser {
         SharedPreferences sharedPrefs =
                 PreferenceManager.getDefaultSharedPreferences(mContext);
         String unitType = sharedPrefs.getString(
-                mContext.getString(R.string.pref_units_key),
+                mContext.getString(R.string.pref_key_units),
                 mContext.getString(R.string.pref_units_metric));
 
         if (unitType.equals(mContext.getString(R.string.pref_units_imperial))) {
@@ -256,6 +256,9 @@ public class JsonParser {
     }
 
     /**
+     * Takes a row from a cursor and constructs a single string of the format:
+     * Date - Weather -- High/Low
+     *
      * @param contentValuesVector {@link ContentValues}
      * @return String array
      */
@@ -299,6 +302,7 @@ public class JsonParser {
                 null
         );
 
+        assert cursor != null;
         if (cursor.moveToFirst()) {
 
             int locationIndex = cursor.getColumnIndex(WeatherContract.LocationEntry._ID);
@@ -314,8 +318,7 @@ public class JsonParser {
 
             locationId = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, contentValues);
         }
-
-
+        cursor.close();
         return locationId;
     }
 }
