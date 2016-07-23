@@ -3,7 +3,6 @@ package com.thomaskioko.sunshine.fragments;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -22,7 +21,7 @@ import android.widget.Toast;
 import com.thomaskioko.sunshine.DetailActivity;
 import com.thomaskioko.sunshine.R;
 import com.thomaskioko.sunshine.SettingsActivity;
-import com.thomaskioko.sunshine.net.HttpHelper;
+import com.thomaskioko.sunshine.data.tasks.FetchWeatherTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,7 +124,8 @@ public class ForecastFragment extends Fragment implements AdapterView.OnItemClic
     private void fetchWeatherData() {
         String metricUnit = mSharedPreferences.getString(getString(R.string.pref_key_temp), getString(R.string.pref_default_value_metric));
         if (!mLocation.equals("")) {
-            new FetchWeatherTask().execute(mLocation, metricUnit);
+            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity(), arrayAdapter);
+            fetchWeatherTask.execute(mLocation, metricUnit);
         } else {
             Toast.makeText(getActivity(), "Could not get location" + mLocation, Toast.LENGTH_SHORT).show();
         }
@@ -148,28 +148,4 @@ public class ForecastFragment extends Fragment implements AdapterView.OnItemClic
 
     }
 
-    /**
-     *
-     */
-    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
-
-        @Override
-        protected String[] doInBackground(String... params) {
-
-            HttpHelper httpHelper = new HttpHelper();
-            return httpHelper.getWeatherForecast(params[0], params[1]);
-        }
-
-        @Override
-        protected void onPostExecute(String[] strings) {
-            super.onPostExecute(strings);
-
-            arrayAdapter.clear();
-            for (String forecastString : strings) {
-                arrayAdapter.add(forecastString);
-            }
-        }
-
-
-    }
 }
