@@ -341,7 +341,7 @@ public class TestProvider extends AndroidTestCase {
 
         int count = mContext.getContentResolver().update(
                 LocationEntry.CONTENT_URI, updatedValues, LocationEntry._ID + "= ?",
-                new String[] { Long.toString(locationRowId)});
+                new String[]{Long.toString(locationRowId)});
         assertEquals(count, 1);
 
         // Test to make sure our observer is called.  If not, we throw an assertion.
@@ -493,18 +493,23 @@ public class TestProvider extends AndroidTestCase {
                 null,
                 null
         );
-        assertEquals("Error: Records not deleted from Weather table during delete", 0, cursor.getCount());
-        cursor.close();
+        if (cursor != null) {
+            assertEquals("Error: Records not deleted from Weather table during delete", 0, cursor.getCount());
 
-        cursor = mContext.getContentResolver().query(
-                LocationEntry.CONTENT_URI,
-                null,
-                null,
-                null,
-                null
-        );
-        assertEquals("Error: Records not deleted from Location table during delete", 0, cursor.getCount());
-        cursor.close();
+            cursor = mContext.getContentResolver().query(
+                    LocationEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+
+            if (cursor != null) {
+                assertEquals("Error: Records not deleted from Location table during delete", 0, cursor.getCount());
+            }
+            cursor.close();
+        }
+
     }
 
     /*
