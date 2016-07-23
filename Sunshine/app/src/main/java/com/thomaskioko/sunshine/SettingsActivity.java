@@ -29,7 +29,7 @@ public class SettingsActivity extends PreferenceActivity
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
         // updated when the preference changes.
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_location)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_temp)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_units)));
     }
 
     /**
