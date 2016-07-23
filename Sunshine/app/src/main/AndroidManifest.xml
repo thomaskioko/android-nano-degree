@@ -26,7 +26,9 @@
         
         <provider
             android:authorities="com.thomaskioko.sunshine"
-            android:name=".data.provider.WeatherProvider"/>
+            android:name=".data.provider.WeatherProvider"
+            android:exported="false"
+            android:enabled="true"/>
     </application>
 
 </manifest>
