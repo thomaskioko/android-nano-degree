@@ -55,7 +55,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         final Result movieResult = mResultList.get(position);
 
         String imagePath = ApplicationConstants.TMDB_IMAGE_URL
-                + ApplicationConstants.IMAGE_SIZE_185
+                + ApplicationConstants.IMAGE_SIZE_500
                 + movieResult.getPosterPath();
 
         Glide.with(mContext)
