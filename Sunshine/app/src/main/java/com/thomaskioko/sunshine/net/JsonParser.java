@@ -14,6 +14,7 @@ import android.util.Log;
 import com.thomaskioko.sunshine.R;
 import com.thomaskioko.sunshine.data.WeatherContract;
 import com.thomaskioko.sunshine.data.WeatherDbHelper;
+import com.thomaskioko.sunshine.util.NotificationUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -175,6 +176,14 @@ public class JsonParser {
                 ContentValues[] contentValuesArray = new ContentValues[contentValuesVector.size()];
                 contentValuesVector.toArray(contentValuesArray);
                 mContext.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, contentValuesArray);
+
+                // delete old data so we don't build up an endless history
+                mContext.getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
+                        WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
+                        new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
+
+                NotificationUtils notificationUtils = new NotificationUtils(mContext);
+                notificationUtils.notifyWeather();
             }
 
             // Sort order:  Ascending, by date.
