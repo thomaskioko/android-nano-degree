@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.thomaskioko.sunshine.BuildConfig;
+
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -46,11 +48,9 @@ public class HttpHelper {
         BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
-        String forecastJsonStr;
         String[] forecastResult = null;
         int numberOfDays = 7;
         String format = "json";
-        String appId = "bb745b861cbe19389641b0903105bfd5";
         try {
 
             final String BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
@@ -65,7 +65,7 @@ public class HttpHelper {
                     .appendQueryParameter(UNITS_PARAM, unit)
                     .appendQueryParameter(DAYS_PARAM, String.valueOf(numberOfDays))
                     .appendQueryParameter(FORMAT_PARAM, format)
-                    .appendQueryParameter(APP_ID, appId)
+                    .appendQueryParameter(APP_ID, BuildConfig.OPEN_WEATHER_MAP_API_KEY)
                     .build();
 
             // Construct the URL for the OpenWeatherMap query
