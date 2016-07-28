@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
+import com.thomaskioko.sunshine.data.sync.SunshineSyncAdapter;
 import com.thomaskioko.sunshine.fragments.DetailFragment;
 import com.thomaskioko.sunshine.fragments.ForecastFragment;
 
@@ -34,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             mTwoPane = false;
             getSupportActionBar().setElevation(0f);
         }
+
+        //Initialize the sync adapter
+        SunshineSyncAdapter.initializeSyncAdapter(this);
 
         ForecastFragment forecastFragment =  ((ForecastFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.fragment_forecast));
