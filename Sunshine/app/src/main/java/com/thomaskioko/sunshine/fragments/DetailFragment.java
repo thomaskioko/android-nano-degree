@@ -57,11 +57,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     // these constants correspond to the projection defined above, and must change if the
     // projection changes
-    private static final int COL_WEATHER_ID = 0;
-    private static final int COL_WEATHER_DATE = 1;
-    private static final int COL_WEATHER_DESC = 2;
-    private static final int COL_WEATHER_MAX_TEMP = 3;
-    private static final int COL_WEATHER_MIN_TEMP = 4;
+    public static final int COL_WEATHER_ID = 0;
+    public static final int COL_WEATHER_DATE = 1;
+    public static final int COL_WEATHER_DESC = 2;
+    public static final int COL_WEATHER_MAX_TEMP = 3;
+    public static final int COL_WEATHER_MIN_TEMP = 4;
     public static final int COL_WEATHER_HUMIDITY = 5;
     public static final int COL_WEATHER_PRESSURE = 6;
     public static final int COL_WEATHER_WIND_SPEED = 7;
@@ -174,7 +174,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             // Read weather condition ID from cursor
             int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
 
-            // Use placeholder Image
+            // Use weather art image
             mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
 
             // Read date from cursor and update views for day of week and date
@@ -188,6 +188,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             String description = data.getString(COL_WEATHER_DESC);
             mDescriptionView.setText(description);
 
+            // For accessibility, add a content description to the icon field
             mIconView.setContentDescription(description);
 
             // Read high temperature from cursor and update view
