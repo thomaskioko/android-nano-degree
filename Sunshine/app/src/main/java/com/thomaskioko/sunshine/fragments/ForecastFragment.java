@@ -24,8 +24,8 @@ import android.widget.Toast;
 import com.thomaskioko.sunshine.R;
 import com.thomaskioko.sunshine.SettingsActivity;
 import com.thomaskioko.sunshine.data.WeatherContract;
-import com.thomaskioko.sunshine.data.tasks.FetchWeatherTask;
-import com.thomaskioko.sunshine.data.tasks.ForecastAdapter;
+import com.thomaskioko.sunshine.data.sync.SunshineSyncAdapter;
+import com.thomaskioko.sunshine.ui.adapters.ForecastAdapter;
 
 /**
  * @author Thomas Kioko
@@ -170,9 +170,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_refresh:
-                fetchWeatherData();
-                return true;
             case R.id.action_settings:
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
@@ -193,20 +190,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     /**
      *
      */
-    private void fetchWeatherData() {
-        String metricUnit = mSharedPreferences.getString(getString(R.string.pref_key_units), getString(R.string.pref_default_value_metric));
-        if (!mLocation.equals("")) {
-            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity(), mLocation);
-            fetchWeatherTask.execute(mLocation, metricUnit);
-        } else {
-            Toast.makeText(getActivity(), "Could not get location" + mLocation, Toast.LENGTH_SHORT).show();
-        }
+    private void updateWeather() {
+        SunshineSyncAdapter.syncImmediately(getActivity());
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        fetchWeatherData();
+        updateWeather();
     }
 
     @Override
@@ -222,7 +213,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     // since we read the location when we create the loader, all we need to do is restart things
     public void onLocationChanged() {
-        fetchWeatherData();
+        updateWeather();
         getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
@@ -251,7 +242,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mForecastAdapter.swapCursor(cursor);
-
         if (mPosition != ListView.INVALID_POSITION) {
             // If we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.
