@@ -1,6 +1,6 @@
 package com.thomaskioko.moviemaniac.api;
 
-import com.thomaskioko.moviemaniac.util.ApplicationConstants;
+import com.thomaskioko.moviemaniac.BuildConfig;
 
 import java.io.IOException;
 
@@ -27,7 +27,7 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         HttpUrl url = request.url().newBuilder()
-                .addQueryParameter("api_key", ApplicationConstants.TMDB_API_KEY)
+                .addQueryParameter("api_key", BuildConfig.TMDB_API_KEY)
                 .build();
         request = request.newBuilder().url(url).build();
         return chain.proceed(request);
