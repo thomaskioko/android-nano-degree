@@ -6,6 +6,10 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +23,30 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
+import com.thomaskioko.moviemaniac.api.TmdbApiClient;
 import com.thomaskioko.moviemaniac.model.Result;
+import com.thomaskioko.moviemaniac.model.ReviewResults;
+import com.thomaskioko.moviemaniac.model.Reviews;
+import com.thomaskioko.moviemaniac.model.VideoResults;
+import com.thomaskioko.moviemaniac.model.Videos;
 import com.thomaskioko.moviemaniac.ui.MovieDetailActivity;
 import com.thomaskioko.moviemaniac.ui.MovieListActivity;
+import com.thomaskioko.moviemaniac.ui.adapters.ReviewsRecyclerViewAdapter;
+import com.thomaskioko.moviemaniac.ui.adapters.VideosRecyclerViewAdapter;
 import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A fragment representing a single Movie detail screen.
@@ -57,7 +72,17 @@ public class MovieDetailFragment extends Fragment {
     TextView mMovieVote;
     @Bind(R.id.circularProgressBar)
     CircularProgressBar mCircularProgressBar;
+    @Bind(R.id.recyclerview_trailers)
+    RecyclerView mRecyclerViewTrailer;
+    @Bind(R.id.recyclerview_reviews)
+    RecyclerView mRecyclerViewReviews;
+    @Bind(R.id.card_view_reviews)
+    CardView mReviewsCardView;
     private Result mMovieResult;
+    private TmdbApiClient mTmdbApiClient;
+    private ArrayList<VideoResults> mVideoResults = new ArrayList<>();
+    private ArrayList<ReviewResults> mReviewsResults = new ArrayList<>();
+    private static final String LOG_TAG = MovieDetailFragment.class.getSimpleName();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -71,6 +96,9 @@ public class MovieDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mMovieResult = MovieManiacApplication.getResult();
+        mTmdbApiClient = MovieManiacApplication.getTmdbApiClient();
+
+        loadMovieData();
 
         Activity activity = this.getActivity();
         CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -128,11 +156,13 @@ public class MovieDetailFragment extends Fragment {
                 + ApplicationConstants.IMAGE_SIZE_185
                 + mMovieResult.getPosterPath();
 
-        Glide.with(getActivity())
+        Glide.with(
+                getActivity())
                 .load(imagePath)
                 .asBitmap()
                 .centerCrop()
-                .into(mThumbnail);
+                .into(mThumbnail
+                );
 
         float rating = mMovieResult.getVoteAverage().floatValue() * 10;
         float popularity = mMovieResult.getPopularity().intValue();
@@ -149,7 +179,81 @@ public class MovieDetailFragment extends Fragment {
         mMoviePopularity.setText(String.valueOf(popularity));
         mMovieVote.setText(String.valueOf(mMovieResult.getVoteCount()));
         mCircularProgressBar.setProgressWithAnimation(rating);
+        mReviewsCardView.setVisibility(View.GONE);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.HORIZONTAL, false);
+        assert mRecyclerViewTrailer != null;
+        mRecyclerViewTrailer.setLayoutManager(linearLayoutManager);
+        LinearLayoutManager _linearLayoutManager = new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.HORIZONTAL, false);
+        assert mRecyclerViewReviews != null;
+        mRecyclerViewReviews.setLayoutManager(_linearLayoutManager);
 
         return rootView;
+    }
+
+    /**
+     * Method that calls {@link #getMovieVideos()} and {@link #getMovieReviews()} to load videos and
+     * and reviews
+     */
+    private void loadMovieData() {
+        getMovieReviews();
+        getMovieVideos();
+    }
+
+    /**
+     * Method to get movie videos
+     */
+    private void getMovieVideos() {
+
+        Call<Videos> topRatedList = mTmdbApiClient.movieInterface().getMovieVideos(mMovieResult.getId());
+        topRatedList.enqueue(new Callback<Videos>() {
+            @Override
+            public void onResponse(Call<Videos> call, Response<Videos> response) {
+
+                if (response.body().getVideoResults().size() < 0) {
+                    mReviewsCardView.setVisibility(View.GONE);
+                } else {
+                    mReviewsCardView.setVisibility(View.VISIBLE);
+                    for (VideoResults videoResults : response.body().getVideoResults()) {
+                        mVideoResults.add(videoResults);
+                        mRecyclerViewTrailer.setAdapter(
+                                new VideosRecyclerViewAdapter(getActivity(), mVideoResults)
+                        );
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Videos> call, Throwable t) {
+                Log.e(LOG_TAG, "@getMovieVideos Error Message:: " + t.getLocalizedMessage());
+            }
+        });
+    }
+
+    /**
+     * Method to fetch movie reviews.
+     */
+    private void getMovieReviews() {
+
+        Call<Reviews> topRatedList = mTmdbApiClient.movieInterface().getMovieReviews(mMovieResult.getId());
+        topRatedList.enqueue(new Callback<Reviews>() {
+            @Override
+            public void onResponse(Call<Reviews> call, Response<Reviews> response) {
+
+                for (ReviewResults reviewResults : response.body().getReviewResultsList()) {
+                    mReviewsResults.add(reviewResults);
+                    mRecyclerViewReviews.setAdapter(
+                            new ReviewsRecyclerViewAdapter(getActivity(), mReviewsResults)
+                    );
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Reviews> call, Throwable t) {
+                Log.e(LOG_TAG, "@getMovieReviews Error Message:: " + t.getLocalizedMessage());
+            }
+        });
     }
 }
