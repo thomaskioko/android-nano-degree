@@ -2,13 +2,22 @@ package com.thomaskioko.moviemaniac.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
+import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
+import com.thomaskioko.moviemaniac.model.Result;
 import com.thomaskioko.moviemaniac.ui.fragments.MovieDetailFragment;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * An activity representing a single Movie detail screen. This
@@ -18,10 +27,13 @@ import com.thomaskioko.moviemaniac.ui.fragments.MovieDetailFragment;
  */
 public class MovieDetailActivity extends AppCompatActivity {
 
+    @Bind(R.id.fab)
+    FloatingActionButton mFloationActionButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
@@ -63,5 +75,18 @@ public class MovieDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick({R.id.fab})
+    void onClickViews(View view) {
+        switch (view.getId()) {
+            case R.id.fab:
+                //TODO:: Save the movie.
+                Result result =  MovieManiacApplication.getResult();
+                Toast.makeText(getApplicationContext(), result.getOriginalTitle(), Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+        }
     }
 }
