@@ -41,7 +41,10 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         mFragmentManager = fragmentManager;
         mTwoPane = isTwoPane;
         mResultList = resultList;
+        MovieManiacApplication.isTwoPane = isTwoPane;
     }
+
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

@@ -17,4 +17,15 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="Widget.MovieManiac.Movie.Trailer.Title" parent="android:Widget">
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">@dimen/spacing_minor</item>
+        <item name="android:lines">2</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:background">@drawable/black_translucent_gradient</item>
+        <item name="android:gravity">bottom|center</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
 </resources>
