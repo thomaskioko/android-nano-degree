@@ -12,7 +12,13 @@
     <!--TextView Titles -->
     <string name="tv_release_year">Release Year:</string>
     <string name="tv_title_plot">Plot:</string>
+    <string name="tv_title_trailers">Trailers:</string>
+    <string name="tv_title_reviews">Reviews:</string>
     <string name="tv_title_rating">Rating</string>
     <string name="tv_title_popularity">Popularity:</string>
     <string name="tv_title_vote_count">Vote Count:</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="read_more">Read More</string>
 </resources>
