@@ -2,16 +2,19 @@ package com.thomaskioko.moviemaniac.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
+import com.thomaskioko.moviemaniac.data.DbUtils;
 import com.thomaskioko.moviemaniac.model.Result;
 import com.thomaskioko.moviemaniac.ui.fragments.MovieDetailFragment;
 
@@ -24,11 +27,16 @@ import butterknife.OnClick;
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
  * in a {@link MovieListActivity}.
+ *
+ * @author Thomas Kioko
  */
 public class MovieDetailActivity extends AppCompatActivity {
 
     @Bind(R.id.fab)
     FloatingActionButton mFloationActionButton;
+    @Bind(R.id.coordinated_layout)
+    CoordinatorLayout mCoordinatedLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,9 +89,40 @@ public class MovieDetailActivity extends AppCompatActivity {
     void onClickViews(View view) {
         switch (view.getId()) {
             case R.id.fab:
-                //TODO:: Save the movie.
-                Result result =  MovieManiacApplication.getResult();
-                Toast.makeText(getApplicationContext(), result.getOriginalTitle(), Toast.LENGTH_SHORT).show();
+                Result result = MovieManiacApplication.getResult();
+
+                DbUtils dbUtils = new DbUtils(getApplicationContext());
+                long recordId = dbUtils.addFavoriteMovie(
+                        result.getId(), result.getTitle(), result.getOverview(), result.getPosterPath(),
+                        result.getBackdropPath(), result.getPopularity(), result.getVoteAverage(),
+                        result.getVoteCount(), result.getReleaseDate()
+                );
+
+                //Check if the record was added successfully and display a notification
+                if (recordId > 0) {
+
+                    Snackbar snackbar = Snackbar
+                            .make(mCoordinatedLayout, result.getTitle() + " has been added to Favorites", Snackbar.LENGTH_LONG);
+
+                    View sbView = snackbar.getView();
+                    sbView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                    textView.setTextColor(getResources().getColor(R.color.white));
+                    textView.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                    snackbar.show();
+
+                } else {
+                    Snackbar snackbar = Snackbar
+                            .make(mCoordinatedLayout, "Something went wrong", Snackbar.LENGTH_LONG);
+
+                    View sbView = snackbar.getView();
+                    sbView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                    textView.setTextColor(getResources().getColor(R.color.white));
+                    textView.setGravity(View.TEXT_ALIGNMENT_CENTER);
+
+                    snackbar.show();
+                }
                 break;
             default:
                 break;
