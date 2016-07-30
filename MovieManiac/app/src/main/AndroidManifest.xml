@@ -3,7 +3,7 @@
     package="com.thomaskioko.moviemaniac">
 
     <!-- Permissions-->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".MovieManiacApplication"
@@ -30,6 +30,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MovieListActivity" />
         </activity>
+
+        <provider
+            android:name=".data.provider.FavoriteMovieProvider"
+            android:authorities="com.thomaskioko.moviemaniac"
+            android:exported="false" />
     </application>
 
 </manifest>
