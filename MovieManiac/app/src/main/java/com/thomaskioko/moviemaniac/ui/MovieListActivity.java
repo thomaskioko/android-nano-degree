@@ -5,8 +5,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
-import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.ui.adapters.ViewPagerAdapter;
 import com.thomaskioko.moviemaniac.ui.fragments.FavoriteMovieFragment;
@@ -31,7 +31,6 @@ public class MovieListActivity extends AppCompatActivity{
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private boolean mTwoPane;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -56,17 +55,14 @@ public class MovieListActivity extends AppCompatActivity{
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
 
-        if (findViewById(R.id.movie_detail_container) != null) {
-            mTwoPane = true;
-            MovieManiacApplication.isTwoPane = true;
-            if (savedInstanceState == null) {
+        View articleView = findViewById(R.id.movie_detail_container);
+        boolean mIsDualPane = articleView != null &&
+                articleView.getVisibility() == View.VISIBLE;
+
+        if (mIsDualPane) {
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.movie_detail_container, new MovieDetailFragment())
                         .commit();
-            }
-        } else {
-            mTwoPane = false;
-            MovieManiacApplication.isTwoPane = false;
         }
     }
 
