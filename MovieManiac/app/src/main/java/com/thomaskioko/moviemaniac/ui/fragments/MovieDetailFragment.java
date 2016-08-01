@@ -91,6 +91,55 @@ public class MovieDetailFragment extends Fragment {
     public MovieDetailFragment() {
     }
 
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.movie_detail, container, false);
+        ButterKnife.bind(this, rootView);
+
+        //Image path
+        String imagePath = ApplicationConstants.TMDB_IMAGE_URL
+                + ApplicationConstants.IMAGE_SIZE_185
+                + mMovieResult.getPosterPath();
+
+        Glide.with(
+                getActivity())
+                .load(imagePath)
+                .asBitmap()
+                .centerCrop()
+                .into(mThumbnail
+                );
+
+        float rating = mMovieResult.getVoteAverage().floatValue() * 10;
+        float popularity = mMovieResult.getPopularity().intValue();
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+                .withLocale(Locale.getDefault());
+
+        //Get the year from the release date.
+        LocalDate date = formatter.parseLocalDate(mMovieResult.getReleaseDate());
+
+        mMoviePlot.setText(mMovieResult.getOverview());
+        mMovieYear.setText(String.valueOf(date.getYear()));
+        mMovieRating.setText(String.valueOf(mMovieResult.getVoteAverage()));
+        mMoviePopularity.setText(String.valueOf(popularity));
+        mMovieVote.setText(String.valueOf(mMovieResult.getVoteCount()));
+        mCircularProgressBar.setProgressWithAnimation(rating);
+        mReviewsCardView.setVisibility(View.GONE);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.HORIZONTAL, false);
+        assert mRecyclerViewTrailer != null;
+        mRecyclerViewTrailer.setLayoutManager(linearLayoutManager);
+        LinearLayoutManager _linearLayoutManager = new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.HORIZONTAL, false);
+        assert mRecyclerViewReviews != null;
+        mRecyclerViewReviews.setLayoutManager(_linearLayoutManager);
+
+        return rootView;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,53 +194,6 @@ public class MovieDetailFragment extends Fragment {
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.movie_detail, container, false);
-        ButterKnife.bind(this, rootView);
-
-        //Image path
-        String imagePath = ApplicationConstants.TMDB_IMAGE_URL
-                + ApplicationConstants.IMAGE_SIZE_185
-                + mMovieResult.getPosterPath();
-
-        Glide.with(
-                getActivity())
-                .load(imagePath)
-                .asBitmap()
-                .centerCrop()
-                .into(mThumbnail
-                );
-
-        float rating = mMovieResult.getVoteAverage().floatValue() * 10;
-        float popularity = mMovieResult.getPopularity().intValue();
-
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd")
-                .withLocale(Locale.getDefault());
-
-        //Get the year from the release date.
-        LocalDate date = formatter.parseLocalDate(mMovieResult.getReleaseDate());
-
-        mMoviePlot.setText(mMovieResult.getOverview());
-        mMovieYear.setText(String.valueOf(date.getYear()));
-        mMovieRating.setText(String.valueOf(mMovieResult.getVoteAverage()));
-        mMoviePopularity.setText(String.valueOf(popularity));
-        mMovieVote.setText(String.valueOf(mMovieResult.getVoteCount()));
-        mCircularProgressBar.setProgressWithAnimation(rating);
-        mReviewsCardView.setVisibility(View.GONE);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
-                LinearLayoutManager.HORIZONTAL, false);
-        assert mRecyclerViewTrailer != null;
-        mRecyclerViewTrailer.setLayoutManager(linearLayoutManager);
-        LinearLayoutManager _linearLayoutManager = new LinearLayoutManager(getActivity(),
-                LinearLayoutManager.HORIZONTAL, false);
-        assert mRecyclerViewReviews != null;
-        mRecyclerViewReviews.setLayoutManager(_linearLayoutManager);
-
-        return rootView;
-    }
 
     /**
      * Method that calls {@link #getMovieVideos()} and {@link #getMovieReviews()} to load videos and
