@@ -49,6 +49,7 @@ public class FavoriteMovieFragment extends Fragment implements LoaderManager.Loa
     @Bind(R.id.grid_view)
     GridView mGridView;
     private FavoritesAdapter mForecastAdapter;
+    private View mDetailView;
     public static final int LOADER_ID = 100;
     private static final String LOG_TAG = FavoriteMovieFragment.class.getSimpleName();
 
@@ -88,6 +89,10 @@ public class FavoriteMovieFragment extends Fragment implements LoaderManager.Loa
             mImageView.setVisibility(View.VISIBLE);
             mTextView.setVisibility(View.VISIBLE);
         }
+
+        mDetailView = rootView.findViewById(R.id.movie_detail_container);
+
+
         return rootView;
     }
 
@@ -113,12 +118,12 @@ public class FavoriteMovieFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mForecastAdapter.swapCursor(data);
+//        mForecastAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mForecastAdapter.swapCursor(null);
+//        mForecastAdapter.swapCursor(null);
     }
 
     /**
@@ -160,7 +165,10 @@ public class FavoriteMovieFragment extends Fragment implements LoaderManager.Loa
 
                         MovieManiacApplication.result = movieResult;
 
-                        if (MovieManiacApplication.isTwoPane) {
+                        final boolean mIsDualPane = mDetailView != null &&
+                                mDetailView.getVisibility() == View.VISIBLE;
+
+                        if (mIsDualPane) {
                             MovieDetailFragment fragment = new MovieDetailFragment();
                             getFragmentManager().beginTransaction()
                                     .replace(R.id.movie_detail_container, fragment)

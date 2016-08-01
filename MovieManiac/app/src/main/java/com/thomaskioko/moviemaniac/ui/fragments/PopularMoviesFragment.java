@@ -36,13 +36,14 @@ public class PopularMoviesFragment extends Fragment {
     @Bind(R.id.progressBar)
     ProgressBar mProgressBar;
     private TmdbApiClient mTmdbApiClient;
+    private View mDetailView;
+    private boolean mIsDualPane;
     private List<Result> mResultList = new ArrayList<>();
     private static final String LOG_TAG = PopularMoviesFragment.class.getSimpleName();
 
     public PopularMoviesFragment() {
         // Required empty public constructor
     }
-
 
 
     @Override
@@ -60,7 +61,17 @@ public class PopularMoviesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_popular_movies, container, false);
         ButterKnife.bind(this, rootView);
 
-        int NUMBER_OF_GRID_ITEMS = 3;
+        mDetailView = rootView.findViewById(R.id.movie_detail_container);
+        mIsDualPane = mDetailView != null &&
+                mDetailView.getVisibility() == View.VISIBLE;
+
+        int NUMBER_OF_GRID_ITEMS;
+        if (mIsDualPane) {
+            NUMBER_OF_GRID_ITEMS = 3;
+
+        } else {
+            NUMBER_OF_GRID_ITEMS = 4;
+        }
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), NUMBER_OF_GRID_ITEMS);
         assert mRecyclerView != null;
         mRecyclerView.setLayoutManager(gridLayoutManager);
@@ -78,6 +89,7 @@ public class PopularMoviesFragment extends Fragment {
         mResultList.clear();
         mRecyclerView.setAdapter(null);
         mProgressBar.setVisibility(View.VISIBLE);
+
         Call<Movie> topRatedList = mTmdbApiClient.movieInterface().getPopularMovies();
         topRatedList.enqueue(new Callback<Movie>() {
             @Override
@@ -88,8 +100,9 @@ public class PopularMoviesFragment extends Fragment {
                     mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(
                             getActivity(),
                             getFragmentManager(),
-                            MovieManiacApplication.isTwoPane,
-                            mResultList));
+                            mIsDualPane,
+                            mResultList)
+                    );
                 }
             }
 
