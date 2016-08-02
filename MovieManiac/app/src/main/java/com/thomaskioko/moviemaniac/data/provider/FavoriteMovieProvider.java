@@ -1,6 +1,7 @@
 package com.thomaskioko.moviemaniac.data.provider;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -43,7 +44,7 @@ public class FavoriteMovieProvider extends ContentProvider {
             }
             // "favorite/*"
             case FAVORITE_WITH_ID: {
-                retCursor = getFavoriteData(projection, selection, selectionArgs, sortOrder);
+                retCursor = getFavoriteMovie(uri, projection, sortOrder);
                 break;
             }
             default:
@@ -207,6 +208,25 @@ public class FavoriteMovieProvider extends ContentProvider {
                 null,
                 sortOrder
         );
+    }
+
+    /**
+     * Get Favorite Movie using the ID
+     *
+     * @param uri        {@link Uri}
+     * @param projection parameters
+     * @param sortOrder  Sort Order
+     * @return {@link Cursor}
+     */
+    private Cursor getFavoriteMovie(Uri uri, String[] projection, String sortOrder) {
+        return mFavoriteMovieDbHelper.getReadableDatabase().query(
+                FavoritesContract.FavoriteMovieEntry.TABLE_NAME,
+                projection,
+                FavoritesContract.FavoriteMovieEntry._ID + " = ?",
+                new String[]{String.valueOf(ContentUris.parseId(uri))},
+                null,
+                null,
+                sortOrder);
     }
 
 }
