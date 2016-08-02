@@ -20,4 +20,5 @@
 
     <string name="read_more">Read More</string>
     <string name="button_close">Close</string>
+    <string name="message_empty_movie_fragment">Please choose a movie</string>
 </resources>

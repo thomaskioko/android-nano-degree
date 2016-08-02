@@ -91,59 +91,6 @@ public class MovieDetailFragment extends Fragment {
     public MovieDetailFragment() {
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mMovieResult = MovieManiacApplication.getResult();
-        mTmdbApiClient = MovieManiacApplication.getTmdbApiClient();
-
-        loadMovieData();
-
-        Activity activity = this.getActivity();
-        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-        if (appBarLayout != null) {
-            if (mMovieResult != null) {
-                appBarLayout.setTitle(mMovieResult.getTitle());
-                final ImageView imageView = (ImageView) activity.findViewById(R.id.ivBigImage);
-
-                //Image URL
-                String imagePath = ApplicationConstants.TMDB_IMAGE_URL
-                        + ApplicationConstants.IMAGE_SIZE_780
-                        + mMovieResult.getBackdropPath();
-
-
-                Glide.with(imageView.getContext())
-                        .load(imagePath)
-                        .asBitmap()
-                        .into(new BitmapImageViewTarget(imageView) {
-                            @Override
-                            public void onResourceReady(Bitmap bitmap, final GlideAnimation glideAnimation) {
-                                super.onResourceReady(bitmap, glideAnimation);
-                                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                                    @Override
-                                    public void onGenerated(Palette palette) {
-
-                                        if (palette.getDarkVibrantSwatch() != null) {
-                                            mRelativeLayout.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
-                                            mCircularProgressBar.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
-
-                                        } else if (palette.getMutedSwatch() != null) {
-                                            mRelativeLayout.setBackgroundColor(palette.getMutedSwatch().getRgb());
-                                            mCircularProgressBar.setBackgroundColor(palette.getMutedSwatch().getRgb());
-                                        }
-                                        if (palette.getLightVibrantSwatch() != null) {
-                                            mCircularProgressBar.setColor(palette.getLightVibrantSwatch().getRgb());
-                                        } else if (palette.getLightMutedSwatch() != null) {
-                                            mCircularProgressBar.setColor(palette.getLightMutedSwatch().getRgb());
-                                        }
-                                    }
-                                });
-                            }
-                        });
-            }
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -151,47 +98,108 @@ public class MovieDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.movie_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-        //Image path
-        String imagePath = ApplicationConstants.TMDB_IMAGE_URL
-                + ApplicationConstants.IMAGE_SIZE_185
-                + mMovieResult.getPosterPath();
+        if (mMovieResult != null) {
+            //Image path
+            String imagePath = ApplicationConstants.TMDB_IMAGE_URL
+                    + ApplicationConstants.IMAGE_SIZE_185
+                    + mMovieResult.getPosterPath();
 
-        Glide.with(
-                getActivity())
-                .load(imagePath)
-                .asBitmap()
-                .centerCrop()
-                .into(mThumbnail
-                );
+            Glide.with(
+                    getActivity())
+                    .load(imagePath)
+                    .asBitmap()
+                    .centerCrop()
+                    .into(mThumbnail
+                    );
 
-        float rating = mMovieResult.getVoteAverage().floatValue() * 10;
-        float popularity = mMovieResult.getPopularity().intValue();
+            float rating = mMovieResult.getVoteAverage().floatValue() * 10;
+            float popularity = mMovieResult.getPopularity().intValue();
 
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd")
-                .withLocale(Locale.getDefault());
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+                    .withLocale(Locale.getDefault());
 
-        //Get the year from the release date.
-        LocalDate date = formatter.parseLocalDate(mMovieResult.getReleaseDate());
+            //Get the year from the release date.
+            LocalDate date = formatter.parseLocalDate(mMovieResult.getReleaseDate());
 
-        mMoviePlot.setText(mMovieResult.getOverview());
-        mMovieYear.setText(String.valueOf(date.getYear()));
-        mMovieRating.setText(String.valueOf(mMovieResult.getVoteAverage()));
-        mMoviePopularity.setText(String.valueOf(popularity));
-        mMovieVote.setText(String.valueOf(mMovieResult.getVoteCount()));
-        mCircularProgressBar.setProgressWithAnimation(rating);
-        mReviewsCardView.setVisibility(View.GONE);
+            mMoviePlot.setText(mMovieResult.getOverview());
+            mMovieYear.setText(String.valueOf(date.getYear()));
+            mMovieRating.setText(String.valueOf(mMovieResult.getVoteAverage()));
+            mMoviePopularity.setText(String.valueOf(popularity));
+            mMovieVote.setText(String.valueOf(mMovieResult.getVoteCount()));
+            mCircularProgressBar.setProgressWithAnimation(rating);
+            mReviewsCardView.setVisibility(View.GONE);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
-                LinearLayoutManager.HORIZONTAL, false);
-        assert mRecyclerViewTrailer != null;
-        mRecyclerViewTrailer.setLayoutManager(linearLayoutManager);
-        LinearLayoutManager _linearLayoutManager = new LinearLayoutManager(getActivity(),
-                LinearLayoutManager.HORIZONTAL, false);
-        assert mRecyclerViewReviews != null;
-        mRecyclerViewReviews.setLayoutManager(_linearLayoutManager);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
+                    LinearLayoutManager.HORIZONTAL, false);
+            assert mRecyclerViewTrailer != null;
+            mRecyclerViewTrailer.setLayoutManager(linearLayoutManager);
+            LinearLayoutManager _linearLayoutManager = new LinearLayoutManager(getActivity(),
+                    LinearLayoutManager.HORIZONTAL, false);
+            assert mRecyclerViewReviews != null;
+            mRecyclerViewReviews.setLayoutManager(_linearLayoutManager);
+        }
 
         return rootView;
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mMovieResult = MovieManiacApplication.getResult();
+
+        if (mMovieResult != null) {
+            mTmdbApiClient = MovieManiacApplication.getTmdbApiClient();
+
+            loadMovieData();
+
+            Activity activity = this.getActivity();
+            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            if (appBarLayout != null) {
+                if (mMovieResult != null) {
+                    appBarLayout.setTitle(mMovieResult.getTitle());
+                    final ImageView imageView = (ImageView) activity.findViewById(R.id.ivBigImage);
+
+                    //Image URL
+                    String imagePath = ApplicationConstants.TMDB_IMAGE_URL
+                            + ApplicationConstants.IMAGE_SIZE_780
+                            + mMovieResult.getBackdropPath();
+
+
+                    Glide.with(imageView.getContext())
+                            .load(imagePath)
+                            .asBitmap()
+                            .into(new BitmapImageViewTarget(imageView) {
+                                @Override
+                                public void onResourceReady(Bitmap bitmap, final GlideAnimation glideAnimation) {
+                                    super.onResourceReady(bitmap, glideAnimation);
+                                    Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                                        @Override
+                                        public void onGenerated(Palette palette) {
+
+                                            if (palette.getDarkVibrantSwatch() != null) {
+                                                mRelativeLayout.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
+                                                mCircularProgressBar.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
+
+                                            } else if (palette.getMutedSwatch() != null) {
+                                                mRelativeLayout.setBackgroundColor(palette.getMutedSwatch().getRgb());
+                                                mCircularProgressBar.setBackgroundColor(palette.getMutedSwatch().getRgb());
+                                            }
+                                            if (palette.getLightVibrantSwatch() != null) {
+                                                mCircularProgressBar.setColor(palette.getLightVibrantSwatch().getRgb());
+                                            } else if (palette.getLightMutedSwatch() != null) {
+                                                mCircularProgressBar.setColor(palette.getLightMutedSwatch().getRgb());
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                }
+            }
+        }
+
+    }
+
 
     /**
      * Method that calls {@link #getMovieVideos()} and {@link #getMovieReviews()} to load videos and

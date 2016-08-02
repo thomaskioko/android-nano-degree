@@ -21,8 +21,6 @@
         android:name="com.thomaskioko.moviemaniac.MovieListFragment"
         android:layout_width="@dimen/item_width"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context=".ui.MovieListActivity"
         tools:listitem="@layout/movie_list_content" />
@@ -31,6 +29,15 @@
         android:id="@+id/movie_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3" />
+        android:layout_weight="3">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/message_empty_movie_fragment"
+            android:textSize="18sp"/>
+
+    </FrameLayout>
 
 </LinearLayout>

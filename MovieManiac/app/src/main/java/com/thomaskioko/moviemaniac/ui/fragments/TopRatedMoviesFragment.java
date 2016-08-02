@@ -37,6 +37,7 @@ public class TopRatedMoviesFragment extends Fragment {
     @Bind(R.id.progressBar)
     ProgressBar mProgressBar;
     private TmdbApiClient mTmdbApiClient;
+    private boolean mIsDualPane;
     private List<Result> mResultList = new ArrayList<>();
     private static final String LOG_TAG = PopularMoviesFragment.class.getSimpleName();
 
@@ -59,7 +60,17 @@ public class TopRatedMoviesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_top_rated_movies, container, false);
         ButterKnife.bind(this, rootView);
 
-        int NUMBER_OF_GRID_ITEMS = 3;
+        View mDetailView = rootView.findViewById(R.id.movie_detail_container);
+        mIsDualPane = mDetailView != null &&
+                mDetailView.getVisibility() == View.VISIBLE;
+
+        int NUMBER_OF_GRID_ITEMS;
+        if (mIsDualPane) {
+            NUMBER_OF_GRID_ITEMS = 3;
+
+        } else {
+            NUMBER_OF_GRID_ITEMS = 4;
+        }
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), NUMBER_OF_GRID_ITEMS);
         assert mRecyclerView != null;
         mRecyclerView.setLayoutManager(gridLayoutManager);
@@ -76,6 +87,7 @@ public class TopRatedMoviesFragment extends Fragment {
         mResultList.clear();
         mRecyclerView.setAdapter(null);
         mProgressBar.setVisibility(View.VISIBLE);
+
         Call<Movie> topRatedList = mTmdbApiClient.movieInterface().getTopRatedMovies();
         topRatedList.enqueue(new Callback<Movie>() {
             @Override
@@ -86,7 +98,7 @@ public class TopRatedMoviesFragment extends Fragment {
                     mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(
                             getActivity(),
                             getFragmentManager(),
-                            MovieManiacApplication.isTwoPane,
+                            mIsDualPane,
                             mResultList
                     ));
                 }
