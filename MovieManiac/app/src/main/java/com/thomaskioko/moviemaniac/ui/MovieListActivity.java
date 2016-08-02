@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.util.ApplicationConstants;
+import com.thomaskioko.moviemaniac.util.SharedPreferenceManager;
 
 import butterknife.ButterKnife;
 
@@ -39,7 +40,8 @@ public class MovieListActivity extends AppCompatActivity  {
     private void setUpToolBarTitle() {
 
         //Set title from preference
-        switch (MovieManiacApplication.savedMovieListType) {
+        SharedPreferenceManager sharedPreferences = new SharedPreferenceManager(getApplicationContext());
+        switch (sharedPreferences.getMovieType()) {
             case ApplicationConstants.PREF_MOVIE_LIST_POPULAR:
                 setTitle("Popular");
                 break;
