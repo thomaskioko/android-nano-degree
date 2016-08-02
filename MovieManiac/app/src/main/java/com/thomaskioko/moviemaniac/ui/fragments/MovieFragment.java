@@ -2,8 +2,6 @@ package com.thomaskioko.moviemaniac.ui.fragments;
 
 
 import android.annotation.TargetApi;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,7 +21,7 @@ import android.widget.TextView;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
-import com.thomaskioko.moviemaniac.data.FavoritesContract;
+import com.thomaskioko.moviemaniac.data.DbUtils;
 import com.thomaskioko.moviemaniac.model.Movie;
 import com.thomaskioko.moviemaniac.model.Result;
 import com.thomaskioko.moviemaniac.ui.adapters.MoviesRecyclerViewAdapter;
@@ -266,46 +264,24 @@ public class MovieFragment extends Fragment {
 
         mResultList.clear();
         mRecyclerView.setAdapter(null);
-        Uri favoriteMovies = FavoritesContract.FavoriteMovieEntry.CONTENT_URI;
 
-        try {
+        DbUtils dbUtils = new DbUtils(getActivity());
+        mResultList = dbUtils.getFavoriteMovies();
 
-            Cursor cursor = getActivity().getContentResolver().query(favoriteMovies,
-                    null, null, null, null);
+        if (mResultList.size() > -1) {
+            mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(
+                    getActivity(),
+                    getFragmentManager(),
+                    MovieManiacApplication.isTwoPane,
+                    mResultList)
+            );
 
-            if (cursor != null && cursor.moveToFirst()) {
-                Log.i(LOG_TAG, "@onCreateView:: Cursor has data");
-                do {
-                    //Create an instance on of {@link Result} object
-                    Result movieResult = new Result();
-                    movieResult.setId(Integer.valueOf(cursor.getString(ApplicationConstants.COL_MOVIE_ID)));
-                    movieResult.setTitle(cursor.getString(ApplicationConstants.COL_MOVIE_TITLE));
-                    movieResult.setPosterPath(cursor.getString(ApplicationConstants.COL_MOVIE_POSTER_PATH));
-                    movieResult.setBackdropPath(cursor.getString(ApplicationConstants.COL_MOVIE_BACKDROP_PATH));
-                    movieResult.setOverview(cursor.getString(ApplicationConstants.COL_MOVIE_OVERVIEW));
-                    movieResult.setPopularity(Double.valueOf(cursor.getString(ApplicationConstants.COL_MOVIE_POPULARITY)));
-                    movieResult.setVoteAverage(Double.valueOf(cursor.getString(ApplicationConstants.COL_MOVIE_VOTE_AVERAGE)));
-                    movieResult.setVoteCount(Integer.valueOf(cursor.getString(ApplicationConstants.COL_MOVIE_VOTE_COUNT)));
-                    movieResult.setReleaseDate(cursor.getString(ApplicationConstants.COL_MOVIE_RELEASE_DATE));
-
-                    mResultList.add(movieResult);
-                    mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(
-                            getActivity(),
-                            getFragmentManager(),
-                            MovieManiacApplication.isTwoPane,
-                            mResultList)
-                    );
-
-                } while (cursor.moveToNext());
-            }
             toggleProgressBar(false);
             mIsFetching = false;
             mEmptyView.setVisibility(View.GONE);
-        } catch (Exception exception) {
-            Log.e(LOG_TAG, "@getFavoriteMovies:: Error message: " + exception.getMessage());
+        } else {
+            mEmptyView.setVisibility(View.VISIBLE);
         }
-
-
     }
 
 }
