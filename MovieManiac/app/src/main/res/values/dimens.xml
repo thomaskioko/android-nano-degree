@@ -10,7 +10,7 @@
 
     <!-- ImageView Margin-->
     <dimen name="grid_image_view">160dp</dimen>
-    <dimen name="grid_image_view_large">190dp</dimen>
+    <dimen name="grid_image_view_large">220dp</dimen>
     <dimen name="image_view_height_large">100dp</dimen>
 
     <dimen name="margin_mini">10dp</dimen>
