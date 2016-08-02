@@ -26,6 +26,10 @@
 
     <!--Texts-->
     <string name="no_network_text">Oops, Something\'s wrong\nMake sure you are connected to network.</string>
-    <string name="no_fav_text">No Movies.</string>
+    <string name="no_movie_text">No Movies Selected.</string>
 
+    <!-- Preference Keys -->
+    <string name="prefs_name">com.thomaskioko.moviemaniac.Prefs</string>
+    <string name="prefs_key_type">popular</string>
+    <string name="prefs_key_type_popular">PREF_MOVIE_LIST_TYPE</string>
 </resources>
