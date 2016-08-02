@@ -90,7 +90,7 @@ public class FavoriteMovieFragment extends Fragment implements LoaderManager.Loa
             mTextView.setVisibility(View.VISIBLE);
         }
 
-        mDetailView = rootView.findViewById(R.id.movie_detail_container);
+        mDetailView = rootView.findViewById(R.id.movie_details_container);
 
 
         return rootView;
@@ -171,7 +171,7 @@ public class FavoriteMovieFragment extends Fragment implements LoaderManager.Loa
                         if (mIsDualPane) {
                             MovieDetailFragment fragment = new MovieDetailFragment();
                             getFragmentManager().beginTransaction()
-                                    .replace(R.id.movie_detail_container, fragment)
+                                    .replace(R.id.movie_details_container, fragment)
                                     .commit();
                         } else {
                             Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
