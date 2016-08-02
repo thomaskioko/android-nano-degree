@@ -1,9 +1,11 @@
 package com.thomaskioko.moviemaniac.ui.fragments;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
@@ -24,6 +26,7 @@ import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
+import com.thomaskioko.moviemaniac.data.DbUtils;
 import com.thomaskioko.moviemaniac.model.Result;
 import com.thomaskioko.moviemaniac.model.ReviewResults;
 import com.thomaskioko.moviemaniac.model.Reviews;
@@ -44,6 +47,7 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -78,6 +82,15 @@ public class MovieDetailFragment extends Fragment {
     RecyclerView mRecyclerViewReviews;
     @Bind(R.id.card_view_reviews)
     CardView mReviewsCardView;
+    @Bind(R.id.coordinated_layout)
+    CoordinatorLayout mCoordinatedLayout;
+    @Bind(R.id.toolbar_layout)
+    CollapsingToolbarLayout appBarLayout;
+    @Bind(R.id.backdrop)
+    ImageView imageView;
+    @Bind(R.id.fab)
+    FloatingActionButton mFloatingActionButton;
+
     private Result mMovieResult;
     private TmdbApiClient mTmdbApiClient;
     private ArrayList<VideoResults> mVideoResults = new ArrayList<>();
@@ -92,10 +105,11 @@ public class MovieDetailFragment extends Fragment {
     }
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.movie_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
         ButterKnife.bind(this, rootView);
 
         if (mMovieResult != null) {
@@ -129,6 +143,43 @@ public class MovieDetailFragment extends Fragment {
             mCircularProgressBar.setProgressWithAnimation(rating);
             mReviewsCardView.setVisibility(View.GONE);
 
+            appBarLayout.setTitle(mMovieResult.getTitle());
+
+            //Image URL
+            String imagePathBackDrop = ApplicationConstants.TMDB_IMAGE_URL
+                    + ApplicationConstants.IMAGE_SIZE_780
+                    + mMovieResult.getBackdropPath();
+
+
+            Glide.with(imageView.getContext())
+                    .load(imagePathBackDrop)
+                    .asBitmap()
+                    .into(new BitmapImageViewTarget(imageView) {
+                        @Override
+                        public void onResourceReady(Bitmap bitmap, final GlideAnimation glideAnimation) {
+                            super.onResourceReady(bitmap, glideAnimation);
+                            Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(Palette palette) {
+
+                                    if (palette.getDarkVibrantSwatch() != null) {
+                                        mRelativeLayout.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
+                                        mCircularProgressBar.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
+
+                                    } else if (palette.getMutedSwatch() != null) {
+                                        mRelativeLayout.setBackgroundColor(palette.getMutedSwatch().getRgb());
+                                        mCircularProgressBar.setBackgroundColor(palette.getMutedSwatch().getRgb());
+                                    }
+                                    if (palette.getLightVibrantSwatch() != null) {
+                                        mCircularProgressBar.setColor(palette.getLightVibrantSwatch().getRgb());
+                                    } else if (palette.getLightMutedSwatch() != null) {
+                                        mCircularProgressBar.setColor(palette.getLightMutedSwatch().getRgb());
+                                    }
+                                }
+                            });
+                        }
+                    });
+
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                     LinearLayoutManager.HORIZONTAL, false);
             assert mRecyclerViewTrailer != null;
@@ -150,54 +201,8 @@ public class MovieDetailFragment extends Fragment {
 
         if (mMovieResult != null) {
             mTmdbApiClient = MovieManiacApplication.getTmdbApiClient();
-
             loadMovieData();
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                if (mMovieResult != null) {
-                    appBarLayout.setTitle(mMovieResult.getTitle());
-                    final ImageView imageView = (ImageView) activity.findViewById(R.id.ivBigImage);
-
-                    //Image URL
-                    String imagePath = ApplicationConstants.TMDB_IMAGE_URL
-                            + ApplicationConstants.IMAGE_SIZE_780
-                            + mMovieResult.getBackdropPath();
-
-
-                    Glide.with(imageView.getContext())
-                            .load(imagePath)
-                            .asBitmap()
-                            .into(new BitmapImageViewTarget(imageView) {
-                                @Override
-                                public void onResourceReady(Bitmap bitmap, final GlideAnimation glideAnimation) {
-                                    super.onResourceReady(bitmap, glideAnimation);
-                                    Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                                        @Override
-                                        public void onGenerated(Palette palette) {
-
-                                            if (palette.getDarkVibrantSwatch() != null) {
-                                                mRelativeLayout.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
-                                                mCircularProgressBar.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
-
-                                            } else if (palette.getMutedSwatch() != null) {
-                                                mRelativeLayout.setBackgroundColor(palette.getMutedSwatch().getRgb());
-                                                mCircularProgressBar.setBackgroundColor(palette.getMutedSwatch().getRgb());
-                                            }
-                                            if (palette.getLightVibrantSwatch() != null) {
-                                                mCircularProgressBar.setColor(palette.getLightVibrantSwatch().getRgb());
-                                            } else if (palette.getLightMutedSwatch() != null) {
-                                                mCircularProgressBar.setColor(palette.getLightMutedSwatch().getRgb());
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                }
-            }
         }
-
     }
 
 
@@ -264,4 +269,49 @@ public class MovieDetailFragment extends Fragment {
             }
         });
     }
+
+    @OnClick({R.id.fab})
+    void onClickViews(View view) {
+        switch (view.getId()) {
+            case R.id.fab:
+                Result result = MovieManiacApplication.getResult();
+
+                DbUtils dbUtils = new DbUtils(getActivity());
+                long recordId = dbUtils.addFavoriteMovie(
+                        result.getId(), result.getTitle(), result.getOverview(), result.getPosterPath(),
+                        result.getBackdropPath(), result.getPopularity(), result.getVoteAverage(),
+                        result.getVoteCount(), result.getReleaseDate()
+                );
+
+                //Check if the record was added successfully and display a notification
+                if (recordId > 0) {
+
+                    Snackbar snackbar = Snackbar
+                            .make(mCoordinatedLayout, result.getTitle() + " has been added to Favorites", Snackbar.LENGTH_LONG);
+
+                    View sbView = snackbar.getView();
+                    sbView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                    textView.setTextColor(getResources().getColor(R.color.white));
+                    textView.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                    snackbar.show();
+
+                } else {
+                    Snackbar snackbar = Snackbar
+                            .make(mCoordinatedLayout, "Something went wrong", Snackbar.LENGTH_LONG);
+
+                    View sbView = snackbar.getView();
+                    sbView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                    textView.setTextColor(getResources().getColor(R.color.white));
+                    textView.setGravity(View.TEXT_ALIGNMENT_CENTER);
+
+                    snackbar.show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
 }
