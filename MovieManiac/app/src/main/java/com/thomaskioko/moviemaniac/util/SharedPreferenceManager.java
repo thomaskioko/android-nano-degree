@@ -1,16 +1,24 @@
 package com.thomaskioko.moviemaniac.util;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.thomaskioko.moviemaniac.MovieManiacApplication;
+import com.thomaskioko.moviemaniac.R;
 
 /**
- * Project : Moviz
- * Created by Sanat Dutta on 6/15/2016.
+ * Helper class that uses {@link SharedPreferences} to store data locally
+ *
+ * @author Thomas Kioko
  */
 public final class SharedPreferenceManager {
 
-    private SharedPreferenceManager() {
+    private Context mContext;
+    public static SharedPreferences mSharedPreferences;
+
+    public SharedPreferenceManager(Context context) {
+        mContext = context;
+        mSharedPreferences = context.getSharedPreferences(context.getString(R.string.prefs_name),
+                Context.MODE_PRIVATE);
     }
 
     /**
@@ -18,12 +26,9 @@ public final class SharedPreferenceManager {
      * @param sValue Value
      */
     public static void saveToSharedPreferences(String key, String sValue) {
-        SharedPreferences.Editor mEditor = MovieManiacApplication.mSharedPreferences.edit();
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putString(key, sValue);
         mEditor.apply();
-
-        //Update local reference
-        MovieManiacApplication.savedMovieListType = sValue;
     }
 
     /**
@@ -32,7 +37,19 @@ public final class SharedPreferenceManager {
      * @return String
      */
     public static String readSharedPreferences(String key, String valueDefault) {
-        return MovieManiacApplication.mSharedPreferences.getString(key, valueDefault);
+        return mSharedPreferences.getString(key, valueDefault);
+    }
+
+    /**
+     * Method to get the saved movie type
+     *
+     * @return {@link String}
+     */
+    public String getMovieType() {
+
+        return SharedPreferenceManager.readSharedPreferences(
+                mContext.getString(R.string.prefs_key_type),
+                ApplicationConstants.PREF_MOVIE_LIST_POPULAR);
     }
 
 }
