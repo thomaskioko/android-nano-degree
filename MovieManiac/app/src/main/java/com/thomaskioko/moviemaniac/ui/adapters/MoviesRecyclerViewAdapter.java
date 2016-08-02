@@ -73,7 +73,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
                 if (mTwoPane) {
                     MovieDetailFragment fragment = new MovieDetailFragment();
                     mFragmentManager.beginTransaction()
-                            .replace(R.id.movie_detail_container, fragment)
+                            .add(R.id.movie_details_container, fragment)
                             .commit();
                 } else {
                     Context context = v.getContext();
