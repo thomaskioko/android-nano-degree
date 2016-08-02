@@ -25,6 +25,9 @@
     <!-- Text Size -->
     <dimen name="text_size_small">15sp</dimen>
     <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="text_size_large">22sp</dimen>
+
+
     <dimen name="margin_large">20dp</dimen>
     <dimen name="margin_extra_large">25dp</dimen>
 
