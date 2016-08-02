@@ -4,7 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.util.Log;
+
+import com.thomaskioko.moviemaniac.model.Result;
+import com.thomaskioko.moviemaniac.util.ApplicationConstants;
+
+import java.util.ArrayList;
 
 /**
  * Helper class to handle CRUD DB functions
@@ -79,5 +85,46 @@ public class DbUtils {
         }
         cursor.close();
         return locationId;
+    }
+
+    /**
+     * Method to fetch all favorite movies from DB
+     *
+     * @return {@link ArrayList} List of Movies
+     */
+    public ArrayList<Result> getFavoriteMovies() {
+
+        ArrayList<Result> resultArrayList = new ArrayList<>();
+        Uri favoriteMovies = FavoritesContract.FavoriteMovieEntry.CONTENT_URI;
+
+        try {
+
+            Cursor cursor = mContext.getContentResolver().query(favoriteMovies,
+                    null, null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                Log.i(LOG_TAG, "@onCreateView:: Cursor has data");
+                do {
+                    //Create an instance on of {@link Result} object
+                    Result movieResult = new Result();
+                    movieResult.setId(Integer.valueOf(cursor.getString(ApplicationConstants.COL_MOVIE_ID)));
+                    movieResult.setTitle(cursor.getString(ApplicationConstants.COL_MOVIE_TITLE));
+                    movieResult.setPosterPath(cursor.getString(ApplicationConstants.COL_MOVIE_POSTER_PATH));
+                    movieResult.setBackdropPath(cursor.getString(ApplicationConstants.COL_MOVIE_BACKDROP_PATH));
+                    movieResult.setOverview(cursor.getString(ApplicationConstants.COL_MOVIE_OVERVIEW));
+                    movieResult.setPopularity(Double.valueOf(cursor.getString(ApplicationConstants.COL_MOVIE_POPULARITY)));
+                    movieResult.setVoteAverage(Double.valueOf(cursor.getString(ApplicationConstants.COL_MOVIE_VOTE_AVERAGE)));
+                    movieResult.setVoteCount(Integer.valueOf(cursor.getString(ApplicationConstants.COL_MOVIE_VOTE_COUNT)));
+                    movieResult.setReleaseDate(cursor.getString(ApplicationConstants.COL_MOVIE_RELEASE_DATE));
+
+                    resultArrayList.add(movieResult);
+
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception exception) {
+            Log.e(LOG_TAG, "@getFavoriteMovies:: Error message: " + exception.getMessage());
+        }
+
+        return resultArrayList;
     }
 }

@@ -10,7 +10,7 @@
 
     <!-- ImageView Margin-->
     <dimen name="grid_image_view">160dp</dimen>
-    <dimen name="grid_image_view_large">190dp</dimen>
+    <dimen name="grid_image_view_large">220dp</dimen>
     <dimen name="image_view_height_large">100dp</dimen>
 
     <dimen name="margin_mini">10dp</dimen>
@@ -25,6 +25,9 @@
     <!-- Text Size -->
     <dimen name="text_size_small">15sp</dimen>
     <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="text_size_large">22sp</dimen>
+
+
     <dimen name="margin_large">20dp</dimen>
     <dimen name="margin_extra_large">25dp</dimen>
 

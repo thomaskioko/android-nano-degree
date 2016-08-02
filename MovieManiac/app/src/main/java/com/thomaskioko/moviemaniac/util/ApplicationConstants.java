@@ -78,4 +78,12 @@ public class ApplicationConstants {
     public static final int COL_MOVIE_VOTE_AVERAGE = 7;
     public static final int COL_MOVIE_VOTE_COUNT = 8;
     public static final int COL_MOVIE_RELEASE_DATE = 9;
+
+
+    /**
+     * Movie types
+     */
+    public static final String PREF_MOVIE_LIST_POPULAR = "popular";
+    public static final String PREF_MOVIE_LIST_TOP_RATED = "top_rated";
+    public static final String PREF_MOVIE_LIST_FAVORITES = "favorites";
 }

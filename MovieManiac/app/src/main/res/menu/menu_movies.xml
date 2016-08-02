@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_popular"
-        android:title="@string/menu_action_popular" />
-
-    <item
-        android:id="@+id/action_top_rated"
-        android:title="@string/menu_action_top_rated" />
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort"
+        android:title="@string/menu_action_sort"
+        app:showAsAction="ifRoom">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/action_popular"
+                    android:title="@string/menu_action_popular" />
+                <item
+                    android:id="@+id/action_top_rated"
+                    android:title="@string/menu_action_top_rated" />
+                <item
+                    android:id="@+id/action_favorites"
+                    android:title="@string/menu_action_favorites" />
+            </group>
+        </menu>
+    </item>
 </menu>

@@ -15,11 +15,13 @@ public class MovieManiacApplication extends Application {
 
     private static TmdbApiClient tmdbApiClient = new TmdbApiClient();
     public static Result result;
+    public static boolean isTwoPane;
 
     @Override
     public void onCreate() {
         super.onCreate();
         tmdbApiClient.setIsDebug(ApplicationConstants.DEBUG);
+
     }
 
     /**
@@ -30,7 +32,7 @@ public class MovieManiacApplication extends Application {
     }
 
     /**
-     * @return
+     * @return {@link Result}
      */
     public static Result getResult() {
         return result;
