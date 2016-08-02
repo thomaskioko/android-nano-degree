@@ -20,7 +20,7 @@
     <dimen name="card_view_corner_radius_micro">4dp</dimen>
     <dimen name="margin_card_view_height">140dp</dimen>
     <dimen name="margin_card_view_height_large">180dp</dimen>
-    <dimen name="margin_card_view_height_xlarge">200dp</dimen>
+    <dimen name="margin_card_view_height_xlarge">240dp</dimen>
 
     <!-- Text Size -->
     <dimen name="text_size_small">15sp</dimen>
