@@ -1,20 +1,11 @@
 package com.thomaskioko.moviemaniac.ui;
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-
+import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
-import com.thomaskioko.moviemaniac.ui.adapters.ViewPagerAdapter;
-import com.thomaskioko.moviemaniac.ui.fragments.FavoriteMovieFragment;
-import com.thomaskioko.moviemaniac.ui.fragments.MovieDetailFragment;
-import com.thomaskioko.moviemaniac.ui.fragments.PopularMoviesFragment;
-import com.thomaskioko.moviemaniac.ui.fragments.TopRatedMoviesFragment;
+import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
@@ -25,19 +16,9 @@ import butterknife.ButterKnife;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class MovieListActivity extends AppCompatActivity{
+public class MovieListActivity extends AppCompatActivity  {
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-    @Bind(R.id.tabs)
-    TabLayout tabLayout;
-    @Bind(R.id.viewpager)
-    ViewPager viewPager;
+    public static boolean twoPane = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,26 +26,30 @@ public class MovieListActivity extends AppCompatActivity{
         setContentView(R.layout.activity_movie_list);
         ButterKnife.bind(this);
 
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        twoPane = findViewById(R.id.movie_details_container) != null;
+        MovieManiacApplication.isTwoPane = twoPane;
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new PopularMoviesFragment(), "Popular");
-        adapter.addFragment(new TopRatedMoviesFragment(), "Top Rated");
-        adapter.addFragment(new FavoriteMovieFragment(), "Favorite");
-        viewPager.setAdapter(adapter);
-        tabLayout.setupWithViewPager(viewPager);
+        setUpToolBarTitle();
 
-        View articleView = findViewById(R.id.movie_detail_container);
-        boolean mIsDualPane = articleView != null &&
-                articleView.getVisibility() == View.VISIBLE;
-
-        if (mIsDualPane) {
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.movie_detail_container, new MovieDetailFragment())
-                        .commit();
-        }
     }
 
+    /**
+     * Method to set Toolbar titles
+     */
+    private void setUpToolBarTitle() {
+
+        //Set title from preference
+        switch (MovieManiacApplication.savedMovieListType) {
+            case ApplicationConstants.PREF_MOVIE_LIST_POPULAR:
+                setTitle("Popular");
+                break;
+            case ApplicationConstants.PREF_MOVIE_LIST_TOP_RATED:
+                setTitle("Top Rated");
+                break;
+            case ApplicationConstants.PREF_MOVIE_LIST_FAVORITES:
+                setTitle("Favorites");
+                break;
+        }
+    }
 
 }
