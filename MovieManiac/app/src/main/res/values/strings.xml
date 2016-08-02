@@ -5,6 +5,8 @@
     <!-- Menu Actions -->
     <string name="menu_action_top_rated">Top Rated</string>
     <string name="menu_action_popular">Popular</string>
+    <string name="menu_action_sort">Sort</string>
+    <string name="menu_action_favorites">Favorites</string>
 
     <!-- Placeholders-->
     <string name="placeholder_release_year">Release Year: %1$S</string>
@@ -21,4 +23,9 @@
     <string name="read_more">Read More</string>
     <string name="button_close">Close</string>
     <string name="message_empty_movie_fragment">Please choose a movie</string>
+
+    <!--Texts-->
+    <string name="no_network_text">Oops, Something\'s wrong\nMake sure you are connected to network.</string>
+    <string name="no_fav_text">No Movies.</string>
+
 </resources>
