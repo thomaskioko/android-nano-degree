@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
 import com.thomaskioko.moviemaniac.model.Result;
 import com.thomaskioko.moviemaniac.util.ApplicationConstants;
-import com.thomaskioko.moviemaniac.util.Utils;
+import com.thomaskioko.moviemaniac.util.SharedPreferenceManager;
 
 /**
  * Application class.
@@ -28,7 +28,7 @@ public class MovieManiacApplication extends Application {
         tmdbApiClient.setIsDebug(ApplicationConstants.DEBUG);
 
         mSharedPreferences = getSharedPreferences(ApplicationConstants.prefName, Context.MODE_PRIVATE);
-        savedMovieListType = Utils.readSharedPreferences(ApplicationConstants.PREF_MOVIE_LIST_TYPE, ApplicationConstants.PREF_MOVIE_LIST_POPULAR);
+        savedMovieListType = SharedPreferenceManager.readSharedPreferences(ApplicationConstants.PREF_MOVIE_LIST_TYPE, ApplicationConstants.PREF_MOVIE_LIST_POPULAR);
 
         //Switch to popular if in search state
         if (ApplicationConstants.PREF_MOVIE_LIST_SEARCH.equals(savedMovieListType))
