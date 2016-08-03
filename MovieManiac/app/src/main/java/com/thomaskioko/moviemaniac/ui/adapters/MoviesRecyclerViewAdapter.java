@@ -17,6 +17,7 @@ import com.thomaskioko.moviemaniac.ui.MovieDetailActivity;
 import com.thomaskioko.moviemaniac.ui.fragments.MovieDetailFragment;
 import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +29,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     private FragmentManager mFragmentManager;
     private boolean mTwoPane;
     private final List<Result> mResultList;
+    private int mListPosition = 0;
 
     /**
      * @param context         Application context
@@ -44,7 +46,6 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     }
 
 
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -55,6 +56,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Result movieResult = mResultList.get(position);
+        mListPosition = position;
 
         String imagePath = ApplicationConstants.TMDB_IMAGE_URL
                 + ApplicationConstants.IMAGE_SIZE_500
@@ -101,5 +103,23 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
             mView = view;
             mImageView = (ImageView) view.findViewById(R.id.imageView);
         }
+    }
+
+    /**
+     * Method that returns a list of Movie items
+     *
+     * @return ArrayList
+     */
+    public ArrayList<Result> getMovieObjects() {
+        return new ArrayList<>(mResultList);
+    }
+
+    /**
+     * Method to get the selected list position
+     *
+     * @return List Position
+     */
+    public int getPosition() {
+        return mListPosition;
     }
 }
