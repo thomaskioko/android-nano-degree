@@ -56,6 +56,8 @@ public class MovieFragment extends Fragment {
     private boolean mIsFetching = false;
     private String movieListType;
     private TmdbApiClient mTmdbApiClient;
+    private MoviesRecyclerViewAdapter mRecyclerViewAdapter;
+    private SharedPreferenceManager sharedPreferenceManager;
     private List<Result> mResultList = new ArrayList<>();
     private static final String LOG_TAG = MovieFragment.class.getSimpleName();
 
@@ -70,6 +72,7 @@ public class MovieFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mTmdbApiClient = MovieManiacApplication.getTmdbApiClient();
+        sharedPreferenceManager = new SharedPreferenceManager(getActivity());
         setHasOptionsMenu(true);
     }
 
@@ -88,6 +91,9 @@ public class MovieFragment extends Fragment {
             NUMBER_OF_GRID_ITEMS = 3;
         }
 
+        mRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getActivity(), getFragmentManager(),
+                MovieManiacApplication.isTwoPane, mResultList);
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), NUMBER_OF_GRID_ITEMS);
         assert mRecyclerView != null;
         mRecyclerView.setLayoutManager(gridLayoutManager);
@@ -96,6 +102,27 @@ public class MovieFragment extends Fragment {
         getPopularMovies();
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            movieListType = sharedPreferenceManager.getMovieType();
+            fetchMovies(movieListType);
+        } else {
+            movieListType = savedInstanceState.getString(ApplicationConstants.KEY_MOVIE_LIST_TYPE);
+            mRecyclerView.smoothScrollToPosition(savedInstanceState.getInt(ApplicationConstants.KEY_LIST_POSITION));
+            ArrayList<Result> resultArrayList = savedInstanceState.getParcelableArrayList(ApplicationConstants.KEY_MOVIE_OBJECTS);
+
+            if (resultArrayList != null) {
+                for (Result result : resultArrayList) {
+                    mResultList.add(result);
+                    mRecyclerView.setAdapter(mRecyclerViewAdapter);
+                }
+            }
+        }
     }
 
 
@@ -160,14 +187,18 @@ public class MovieFragment extends Fragment {
         switch (selectedMovieType) {
             case ApplicationConstants.PREF_MOVIE_LIST_POPULAR:
                 getPopularMovies();
+                saveMovieType(ApplicationConstants.PREF_MOVIE_LIST_POPULAR);
                 break;
             case ApplicationConstants.PREF_MOVIE_LIST_TOP_RATED:
                 getTopRatedMovies();
+                saveMovieType(ApplicationConstants.PREF_MOVIE_LIST_TOP_RATED);
                 break;
             case ApplicationConstants.PREF_MOVIE_LIST_FAVORITES:
                 getFavoriteMovies();
+                saveMovieType(ApplicationConstants.PREF_MOVIE_LIST_FAVORITES);
                 break;
             default:
+                saveMovieType(ApplicationConstants.PREF_MOVIE_LIST_POPULAR);
                 break;
         }
     }
@@ -284,4 +315,21 @@ public class MovieFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(ApplicationConstants.KEY_MOVIE_OBJECTS, mRecyclerViewAdapter.getMovieObjects());
+        outState.putInt(ApplicationConstants.KEY_LIST_POSITION, mRecyclerViewAdapter.getPosition());
+        outState.putString(ApplicationConstants.KEY_MOVIE_LIST_TYPE, movieListType);
+    }
+
+    /**
+     * Helper method that saves the selected movie type in shared preference.
+     *
+     * @param movieType Movie Type
+     */
+    private void saveMovieType(String movieType) {
+        sharedPreferenceManager.saveToSharedPreferences(
+                getString(R.string.prefs_key_type), movieType);
+    }
 }
