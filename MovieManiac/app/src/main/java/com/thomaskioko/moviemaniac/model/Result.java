@@ -1,5 +1,8 @@
 package com.thomaskioko.moviemaniac.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -8,7 +11,7 @@ import java.util.List;
 /**
  * @author Thomas Kioko
  */
-public class Result {
+public class Result implements Parcelable {
 
     @SerializedName(value = "poster_path")
     private String posterPath;
@@ -32,6 +35,13 @@ public class Result {
     private Boolean video;
     @SerializedName(value = "vote_average")
     private Double voteAverage;
+
+    /**
+     * Default Constructor
+     */
+    public Result() {
+
+    }
 
     /**
      * @return The posterPath
@@ -228,4 +238,54 @@ public class Result {
     public void setVoteAverage(Double voteAverage) {
         this.voteAverage = voteAverage;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.posterPath);
+        dest.writeByte(this.adult ? (byte) 1 : (byte) 0);
+        dest.writeString(this.overview);
+        dest.writeString(this.releaseDate);
+        dest.writeInt(this.id);
+        dest.writeString(this.originalTitle);
+        dest.writeString(this.originalLanguage);
+        dest.writeString(this.title);
+        dest.writeString(this.backdropPath);
+        dest.writeDouble(this.popularity);
+        dest.writeInt(this.voteCount);
+        dest.writeByte(this.video ? (byte) 1 : (byte) 0);
+        dest.writeDouble(this.voteAverage);
+    }
+
+    protected Result(Parcel in) {
+        this.posterPath = in.readString();
+        this.adult = in.readByte() != 0;
+        this.overview = in.readString();
+        this.releaseDate = in.readString();
+        this.id = in.readInt();
+        this.originalTitle = in.readString();
+        this.originalLanguage = in.readString();
+        this.title = in.readString();
+        this.backdropPath = in.readString();
+        this.popularity = in.readDouble();
+        this.voteCount = in.readInt();
+        this.video = in.readByte() != 0;
+        this.voteAverage = in.readDouble();
+    }
+
+    public static final Creator<Result> CREATOR = new Creator<Result>() {
+        @Override
+        public Result createFromParcel(Parcel source) {
+            return new Result(source);
+        }
+
+        @Override
+        public Result[] newArray(int size) {
+            return new Result[size];
+        }
+    };
 }
