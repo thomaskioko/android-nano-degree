@@ -2,6 +2,7 @@ package com.thomaskioko.moviemaniac.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.thomaskioko.moviemaniac.R;
 
@@ -14,6 +15,7 @@ public final class SharedPreferenceManager {
 
     private Context mContext;
     public static SharedPreferences mSharedPreferences;
+    private static final String LOG_TAG = SharedPreferenceManager.class.getSimpleName();
 
     public SharedPreferenceManager(Context context) {
         mContext = context;
@@ -25,10 +27,12 @@ public final class SharedPreferenceManager {
      * @param key    Shared preference key
      * @param sValue Value
      */
-    public static void saveToSharedPreferences(String key, String sValue) {
+    public void saveToSharedPreferences(String key, String sValue) {
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putString(key, sValue);
         mEditor.apply();
+
+        Log.i(LOG_TAG, "@saveToSharedPreferences:: Movie Type - " + sValue);
     }
 
     /**
