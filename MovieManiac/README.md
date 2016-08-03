@@ -17,3 +17,26 @@ Once you have it, open `gradle.properties` file and paste your API key in `TMDB_
  4. [ButterKnife](http://jakewharton.github.io/butterknife/)
  5. [Circular ProgressBar](https://github.com/lopspower/CircularProgressBar)
  6. [JodaTime](http://www.joda.org/joda-time/)
+ 
+ 
+ 
+ <table>
+  <td>
+    <p align="center">
+  <img src="https://github.com/kioko/android-nano-degree/blob/master/MovieManiac/art/PhoneView.png?raw=true" alt="Final Result" width="250"/>
+</p>
+<p align="center">
+  <img src="https://github.com/kioko/android-nano-degree/blob/master/MovieManiac/art/PhoneView-MovieDetail.png?raw=true" alt="Final Result" width="250"/>
+</p>
+  </td>
+  
+  <td>
+  <p align="center">
+  <img src="https://github.com/kioko/android-nano-degree/blob/master/MovieManiac/art/NoMovieTabView.png?raw=true" alt="Final Result" width="300"/>
+</p>
+    <p align="center">
+  <img style="position: center;" src="https://github.com/kioko/android-nano-degree/blob/master/MovieManiac/art/TabletView.png?raw=true" alt="Final Result" width="300"/>
+</p>
+  </td>
+</tr>
+</table>
