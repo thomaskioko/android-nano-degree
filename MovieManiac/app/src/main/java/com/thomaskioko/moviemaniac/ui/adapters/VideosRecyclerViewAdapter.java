@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.thomaskioko.moviemaniac.R;
@@ -67,7 +68,12 @@ public class VideosRecyclerViewAdapter extends RecyclerView.Adapter<VideosRecycl
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("http://www.youtube.com/watch?v=" + videoResults.getKey()));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
+                // Verify that the intent will resolve to an activity
+                if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+                    mContext.startActivity(intent);
+                }else{
+                    Toast.makeText(mContext, "Cannot open Video.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
