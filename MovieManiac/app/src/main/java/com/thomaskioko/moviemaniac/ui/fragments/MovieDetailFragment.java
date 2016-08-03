@@ -2,6 +2,7 @@ package com.thomaskioko.moviemaniac.ui.fragments;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -28,7 +29,8 @@ import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
-import com.thomaskioko.moviemaniac.data.DbUtils;
+import com.thomaskioko.moviemaniac.interfaces.MovieCallback;
+import com.thomaskioko.moviemaniac.data.tasks.DatabaseAsyncTask;
 import com.thomaskioko.moviemaniac.model.Result;
 import com.thomaskioko.moviemaniac.model.ReviewResults;
 import com.thomaskioko.moviemaniac.model.Reviews;
@@ -39,6 +41,7 @@ import com.thomaskioko.moviemaniac.ui.MovieListActivity;
 import com.thomaskioko.moviemaniac.ui.adapters.ReviewsRecyclerViewAdapter;
 import com.thomaskioko.moviemaniac.ui.adapters.VideosRecyclerViewAdapter;
 import com.thomaskioko.moviemaniac.util.ApplicationConstants;
+import com.thomaskioko.moviemaniac.util.SharedPreferenceManager;
 
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -60,7 +63,7 @@ import retrofit2.Response;
  * in two-pane mode (on tablets) or a {@link MovieDetailActivity}
  * on handsets.
  */
-public class MovieDetailFragment extends Fragment {
+public class MovieDetailFragment extends Fragment implements MovieCallback {
 
     @Bind(R.id.layout_movie_title)
     RelativeLayout mRelativeLayout;
@@ -95,8 +98,11 @@ public class MovieDetailFragment extends Fragment {
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
+    private MovieCallback movieCallback = this;
+    private MovieCallback mCallback;
     private Result mMovieResult;
     private TmdbApiClient mTmdbApiClient;
+    private SharedPreferenceManager sharedPreferenceManager;
     private ArrayList<VideoResults> mVideoResults = new ArrayList<>();
     private ArrayList<ReviewResults> mReviewsResults = new ArrayList<>();
     private static final String LOG_TAG = MovieDetailFragment.class.getSimpleName();
@@ -109,109 +115,123 @@ public class MovieDetailFragment extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        sharedPreferenceManager = new SharedPreferenceManager(getActivity());
+        mTmdbApiClient = MovieManiacApplication.getTmdbApiClient();
 
-        if (mMovieResult != null) {
-            //Image path
-            String imagePath = ApplicationConstants.TMDB_IMAGE_URL
-                    + ApplicationConstants.IMAGE_SIZE_185
-                    + mMovieResult.getPosterPath();
+//        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-            Glide.with(
-                    getActivity())
-                    .load(imagePath)
-                    .asBitmap()
-                    .centerCrop()
-                    .into(mThumbnail
-                    );
+        if (savedInstanceState == null) {
+            Bundle mBundle = getArguments();
+            if (mBundle != null) mMovieResult = mBundle.getParcelable("data");
+            else mMovieResult = getActivity().getIntent().getParcelableExtra("data");
 
-            float rating = mMovieResult.getVoteAverage().floatValue() * 10;
-            float popularity = mMovieResult.getPopularity().intValue();
-
-            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd")
-                    .withLocale(Locale.getDefault());
-
-            //Get the year from the release date.
-            LocalDate date = formatter.parseLocalDate(mMovieResult.getReleaseDate());
-
-            mMoviePlot.setText(mMovieResult.getOverview());
-            mMovieYear.setText(String.valueOf(date.getYear()));
-            mMovieRating.setText(String.valueOf(mMovieResult.getVoteAverage()));
-            mMoviePopularity.setText(String.valueOf(popularity));
-            mMovieVote.setText(String.valueOf(mMovieResult.getVoteCount()));
-            mCircularProgressBar.setProgressWithAnimation(rating);
-            mReviewsCardView.setVisibility(View.GONE);
-
-            appBarLayout.setTitle(mMovieResult.getTitle());
-
-            //Image URL
-            String imagePathBackDrop = ApplicationConstants.TMDB_IMAGE_URL
-                    + ApplicationConstants.IMAGE_SIZE_780
-                    + mMovieResult.getBackdropPath();
-
-
-            Glide.with(imageView.getContext())
-                    .load(imagePathBackDrop)
-                    .asBitmap()
-                    .into(new BitmapImageViewTarget(imageView) {
-                        @Override
-                        public void onResourceReady(Bitmap bitmap, final GlideAnimation glideAnimation) {
-                            super.onResourceReady(bitmap, glideAnimation);
-                            Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                                @Override
-                                public void onGenerated(Palette palette) {
-
-                                    if (palette.getDarkVibrantSwatch() != null) {
-                                        mRelativeLayout.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
-                                        mCircularProgressBar.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
-
-                                    } else if (palette.getMutedSwatch() != null) {
-                                        mRelativeLayout.setBackgroundColor(palette.getMutedSwatch().getRgb());
-                                        mCircularProgressBar.setBackgroundColor(palette.getMutedSwatch().getRgb());
-                                    }
-                                    if (palette.getLightVibrantSwatch() != null) {
-                                        mCircularProgressBar.setColor(palette.getLightVibrantSwatch().getRgb());
-                                    } else if (palette.getLightMutedSwatch() != null) {
-                                        mCircularProgressBar.setColor(palette.getLightMutedSwatch().getRgb());
-                                    }
-                                }
-                            });
-                        }
-                    });
-
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
-                    LinearLayoutManager.HORIZONTAL, false);
-            assert mRecyclerViewTrailer != null;
-            mRecyclerViewTrailer.setLayoutManager(linearLayoutManager);
-            LinearLayoutManager _linearLayoutManager = new LinearLayoutManager(getActivity(),
-                    LinearLayoutManager.HORIZONTAL, false);
-            assert mRecyclerViewReviews != null;
-            mRecyclerViewReviews.setLayoutManager(_linearLayoutManager);
+            loadMovieData();
+        } else {
+            mMovieResult = savedInstanceState.getParcelable(ApplicationConstants.KEY_MOVIE_OBJECT);
         }
+
+        new DatabaseAsyncTask(this, getActivity(), null).execute(ApplicationConstants.TASK_IS_FAVORITE, String.valueOf(mMovieResult.getId()));
+
+        initViews();
 
         return rootView;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    /**
+     * Helper method to initialise views.
+     */
+    private void initViews() {
+        //Image path
+        String imagePath = ApplicationConstants.TMDB_IMAGE_URL
+                + ApplicationConstants.IMAGE_SIZE_185
+                + mMovieResult.getPosterPath();
 
-        mMovieResult = MovieManiacApplication.getResult();
+        Glide.with(
+                getActivity())
+                .load(imagePath)
+                .asBitmap()
+                .centerCrop()
+                .into(mThumbnail
+                );
 
-        if (mMovieResult != null) {
-            mTmdbApiClient = MovieManiacApplication.getTmdbApiClient();
-            loadMovieData();
-        }
+        float rating = mMovieResult.getVoteAverage().floatValue() * 10;
+        float popularity = mMovieResult.getPopularity().intValue();
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+                .withLocale(Locale.getDefault());
+
+        //Get the year from the release date.
+        LocalDate date = formatter.parseLocalDate(mMovieResult.getReleaseDate());
+
+        mMoviePlot.setText(mMovieResult.getOverview());
+        mMovieYear.setText(String.valueOf(date.getYear()));
+        mMovieRating.setText(String.valueOf(mMovieResult.getVoteAverage()));
+        mMoviePopularity.setText(String.valueOf(popularity));
+        mMovieVote.setText(String.valueOf(mMovieResult.getVoteCount()));
+        mCircularProgressBar.setProgressWithAnimation(rating);
+        mReviewsCardView.setVisibility(View.GONE);
+
+        appBarLayout.setTitle(mMovieResult.getTitle());
+
+        //Backdrop Image URL
+        String imagePathBackDrop = ApplicationConstants.TMDB_IMAGE_URL
+                + ApplicationConstants.IMAGE_SIZE_780
+                + mMovieResult.getBackdropPath();
+
+
+        Glide.with(imageView.getContext())
+                .load(imagePathBackDrop)
+                .asBitmap()
+                .into(new BitmapImageViewTarget(imageView) {
+                    @Override
+                    public void onResourceReady(Bitmap bitmap, final GlideAnimation glideAnimation) {
+                        super.onResourceReady(bitmap, glideAnimation);
+                        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                            @Override
+                            public void onGenerated(Palette palette) {
+
+                                if (palette.getDarkVibrantSwatch() != null) {
+                                    mRelativeLayout.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
+                                    mCircularProgressBar.setBackgroundColor(palette.getDarkVibrantSwatch().getRgb());
+
+                                } else if (palette.getMutedSwatch() != null) {
+                                    mRelativeLayout.setBackgroundColor(palette.getMutedSwatch().getRgb());
+                                    mCircularProgressBar.setBackgroundColor(palette.getMutedSwatch().getRgb());
+                                }
+                                if (palette.getLightVibrantSwatch() != null) {
+                                    mCircularProgressBar.setColor(palette.getLightVibrantSwatch().getRgb());
+                                } else if (palette.getLightMutedSwatch() != null) {
+                                    mCircularProgressBar.setColor(palette.getLightMutedSwatch().getRgb());
+                                }
+                            }
+                        });
+                    }
+                });
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.HORIZONTAL, false);
+        assert mRecyclerViewTrailer != null;
+        mRecyclerViewTrailer.setLayoutManager(linearLayoutManager);
+        LinearLayoutManager _linearLayoutManager = new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.HORIZONTAL, false);
+        assert mRecyclerViewReviews != null;
+        mRecyclerViewReviews.setLayoutManager(_linearLayoutManager);
     }
 
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (MovieListActivity.isTwoPane) mCallback = (MovieCallback) getActivity();
+    }
 
     /**
      * Method that calls {@link #getMovieVideos()} and {@link #getMovieReviews()} to load videos and
@@ -281,44 +301,56 @@ public class MovieDetailFragment extends Fragment {
     void onClickViews(View view) {
         switch (view.getId()) {
             case R.id.fab:
-                Result result = MovieManiacApplication.getResult();
+                new DatabaseAsyncTask(movieCallback, getActivity(), mMovieResult).execute(ApplicationConstants.TASK_ADD_FAVORITE, null);
+                break;
+            default:
+                break;
+        }
+    }
 
-                DbUtils dbUtils = new DbUtils(getActivity());
-                long recordId = dbUtils.addFavoriteMovie(
-                        result.getId(), result.getTitle(), result.getOverview(), result.getPosterPath(),
-                        result.getBackdropPath(), result.getPopularity(), result.getVoteAverage(),
-                        result.getVoteCount(), result.getReleaseDate()
-                );
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(ApplicationConstants.KEY_MOVIE_OBJECT, mMovieResult);
+    }
 
-                //Check if the record was added successfully and display a notification
-                if (recordId > 0) {
-
+    @Override
+    public void CallbackRequest(String requestType, String bundleData) {
+        switch (requestType) {
+            case ApplicationConstants.CALLBACK_ADD_FAVORITE:
+                if (bundleData.equals("true")) {
+                    if (sharedPreferenceManager.getMovieType().
+                            equals(ApplicationConstants.PREF_MOVIE_LIST_FAVORITES) && MovieDetailActivity.twoPane) {
+                        mCallback.CallbackRequest(ApplicationConstants.CALLBACK_REFRESH_FAVORITES, "");
+                    }
                     Snackbar snackbar = Snackbar
-                            .make(mCoordinatedLayout, result.getTitle() + " has been added to Favorites", Snackbar.LENGTH_LONG);
+                            .make(mCoordinatedLayout, mMovieResult.getTitle() + " has been added to Favorites", Snackbar.LENGTH_LONG);
 
-                    View sbView = snackbar.getView();
-                    sbView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                    TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                    View snackBarView = snackbar.getView();
+                    snackBarView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
                     textView.setTextColor(getResources().getColor(R.color.white));
                     textView.setGravity(View.TEXT_ALIGNMENT_CENTER);
                     snackbar.show();
-
-                } else {
+                } else if (bundleData.equals("false")) {
                     Snackbar snackbar = Snackbar
-                            .make(mCoordinatedLayout, "Something went wrong", Snackbar.LENGTH_LONG);
+                            .make(mCoordinatedLayout, mMovieResult.getTitle()
+                                    + " could not be added to Favorites", Snackbar.LENGTH_LONG);
 
                     View sbView = snackbar.getView();
                     sbView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
                     textView.setTextColor(getResources().getColor(R.color.white));
                     textView.setGravity(View.TEXT_ALIGNMENT_CENTER);
-
                     snackbar.show();
                 }
                 break;
-            default:
-                break;
         }
+    }
+
+    @Override
+    public void CallbackRequest(String requestType, ArrayList<Result> resultArrayList) {
+
     }
 
 }

@@ -19,6 +19,7 @@ import butterknife.ButterKnife;
  */
 public class MovieDetailActivity extends AppCompatActivity {
 
+    public static boolean twoPane = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -89,5 +89,22 @@ public class ApplicationConstants {
 
     public static final String KEY_MOVIE_OBJECTS = "KEY_MOVIE_OBJECTS";
     public static final String KEY_MOVIE_LIST_TYPE = "KEY_MOVIE_LIST_TYPE";
+    public static final String KEY_MOVIE_OBJECT = "KEY_MOVIE_OBJECT";
     public static final String KEY_LIST_POSITION = "KEY_LIST_POSITION";
+
+    /**
+     * Callback Related constants
+     */
+    public static final String CALLBACK_IS_FAVORITE = "CALLBACK_IS_FAVORITE";
+    public static final String CALLBACK_ADD_FAVORITE = "CALLBACK_ADD_FAVORITE";
+    public static final String CALLBACK_QUERY_FAVORITE_LIST = "CALLBACK_QUERY_FAVORITE_LIST";
+    public static final String CALLBACK_MOVIE_BUNDLE = "CALLBACK_MOVIE_BUNDLE";
+    public static final String CALLBACK_REFRESH_FAVORITES = "CALLBACK_REFRESH_FAVORITES";
+
+    /**
+     * DB Related constants
+     */
+    public static final String TASK_IS_FAVORITE = "TASK_IS_FAVORITE";
+    public static final String TASK_ADD_FAVORITE = "TASK_ADD_FAVORITE";
+    public static final String TASK_QUERY_FAVORITE_LIST = "TASK_QUERY_FAVORITE_LIST";
 }

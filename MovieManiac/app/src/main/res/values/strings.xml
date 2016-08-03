@@ -32,4 +32,5 @@
     <string name="prefs_name">com.thomaskioko.moviemaniac.Prefs</string>
     <string name="prefs_key_type">movie_list_type</string>
     <string name="prefs_key_type_popular">PREF_MOVIE_LIST_TYPE</string>
+    <string name="no_favorite_movie_text">No movies added to favorites</string>
 </resources>

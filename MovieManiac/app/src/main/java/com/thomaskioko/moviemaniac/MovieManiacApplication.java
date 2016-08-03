@@ -3,7 +3,6 @@ package com.thomaskioko.moviemaniac;
 import android.app.Application;
 
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
-import com.thomaskioko.moviemaniac.model.Result;
 import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 
 /**
@@ -14,7 +13,6 @@ import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 public class MovieManiacApplication extends Application {
 
     private static TmdbApiClient tmdbApiClient = new TmdbApiClient();
-    public static Result result;
     public static boolean isTwoPane;
 
     @Override
@@ -29,13 +27,6 @@ public class MovieManiacApplication extends Application {
      */
     public static TmdbApiClient getTmdbApiClient() {
         return tmdbApiClient;
-    }
-
-    /**
-     * @return {@link Result}
-     */
-    public static Result getResult() {
-        return result;
     }
 
 }
