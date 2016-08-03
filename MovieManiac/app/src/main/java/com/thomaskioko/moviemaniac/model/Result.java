@@ -247,7 +247,6 @@ public class Result implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.posterPath);
-        dest.writeByte(this.adult ? (byte) 1 : (byte) 0);
         dest.writeString(this.overview);
         dest.writeString(this.releaseDate);
         dest.writeInt(this.id);
@@ -257,13 +256,11 @@ public class Result implements Parcelable {
         dest.writeString(this.backdropPath);
         dest.writeDouble(this.popularity);
         dest.writeInt(this.voteCount);
-        dest.writeByte(this.video ? (byte) 1 : (byte) 0);
         dest.writeDouble(this.voteAverage);
     }
 
     protected Result(Parcel in) {
         this.posterPath = in.readString();
-        this.adult = in.readByte() != 0;
         this.overview = in.readString();
         this.releaseDate = in.readString();
         this.id = in.readInt();
@@ -273,7 +270,6 @@ public class Result implements Parcelable {
         this.backdropPath = in.readString();
         this.popularity = in.readDouble();
         this.voteCount = in.readInt();
-        this.video = in.readByte() != 0;
         this.voteAverage = in.readDouble();
     }
 
