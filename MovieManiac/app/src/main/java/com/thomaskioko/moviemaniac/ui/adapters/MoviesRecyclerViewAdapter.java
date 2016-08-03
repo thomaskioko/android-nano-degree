@@ -2,7 +2,7 @@ package com.thomaskioko.moviemaniac.ui.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.FragmentManager;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,15 +10,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
+import com.thomaskioko.moviemaniac.interfaces.MovieDetailCallback;
 import com.thomaskioko.moviemaniac.model.Result;
 import com.thomaskioko.moviemaniac.ui.MovieDetailActivity;
-import com.thomaskioko.moviemaniac.ui.fragments.MovieDetailFragment;
+import com.thomaskioko.moviemaniac.ui.MovieListActivity;
 import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * @author Thomas Kioko
@@ -26,23 +29,21 @@ import java.util.List;
 public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecyclerViewAdapter.ViewHolder> {
 
     private Context mContext;
-    private FragmentManager mFragmentManager;
-    private boolean mTwoPane;
     private final List<Result> mResultList;
     private int mListPosition = 0;
+    private MovieDetailCallback movieDetailCallback;
 
     /**
-     * @param context         Application context
-     * @param fragmentManager {@link FragmentManager}
-     * @param isTwoPane       {@link Boolean} Where the view is a two pane(Tablet view)
-     * @param resultList      {@link Result} A list of Movie Results
+     * @param context    Application context
+     * @param resultList {@link Result} A list of Movie Results
      */
-    public MoviesRecyclerViewAdapter(Context context, FragmentManager fragmentManager, boolean isTwoPane,
-                                     List<Result> resultList) {
+    public MoviesRecyclerViewAdapter(Context context, List<Result> resultList) {
         mContext = context;
-        mFragmentManager = fragmentManager;
-        mTwoPane = isTwoPane;
         mResultList = resultList;
+    }
+
+    public void setMovieDetailCallback(MovieDetailCallback callback) {
+        this.movieDetailCallback = callback;
     }
 
 
@@ -54,7 +55,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         final Result movieResult = mResultList.get(position);
         mListPosition = position;
 
@@ -71,15 +72,14 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MovieManiacApplication.result = movieResult;
-                if (mTwoPane) {
-                    MovieDetailFragment fragment = new MovieDetailFragment();
-                    mFragmentManager.beginTransaction()
-                            .add(R.id.movie_details_container, fragment)
-                            .commit();
+                if (MovieListActivity.isTwoPane) {
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("data", mResultList.get(position));
+                    movieDetailCallback.CallbackRequest(ApplicationConstants.CALLBACK_MOVIE_BUNDLE, bundle);
                 } else {
                     Context context = v.getContext();
                     Intent intent = new Intent(context, MovieDetailActivity.class);
+                    intent.putExtra("data", mResultList.get(position));
                     context.startActivity(intent);
                 }
             }
@@ -93,7 +93,8 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final ImageView mImageView;
+        @Bind(R.id.imageView)
+        ImageView mImageView;
 
         /**
          * @param view {@link View}
@@ -101,17 +102,8 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mImageView = (ImageView) view.findViewById(R.id.imageView);
+            ButterKnife.bind(this, view);
         }
-    }
-
-    /**
-     * Method that returns a list of Movie items
-     *
-     * @return ArrayList
-     */
-    public ArrayList<Result> getMovieObjects() {
-        return new ArrayList<>(mResultList);
     }
 
     /**
@@ -121,5 +113,15 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
      */
     public int getPosition() {
         return mListPosition;
+    }
+
+    /**
+     * @param add             {@link Boolean} True/False
+     * @param resultArrayList {@link Result} a list of movie objects
+     */
+    public void reloadRecyclerView(boolean add, ArrayList<Result> resultArrayList) {
+        if (!add) mResultList.clear();
+        if (resultArrayList.size() > 0) mResultList.addAll(resultArrayList);
+        notifyDataSetChanged();
     }
 }

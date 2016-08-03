@@ -1,9 +1,8 @@
 package com.thomaskioko.moviemaniac.ui.fragments;
 
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,9 +20,12 @@ import android.widget.TextView;
 import com.thomaskioko.moviemaniac.MovieManiacApplication;
 import com.thomaskioko.moviemaniac.R;
 import com.thomaskioko.moviemaniac.api.TmdbApiClient;
-import com.thomaskioko.moviemaniac.data.DbUtils;
+import com.thomaskioko.moviemaniac.interfaces.MovieCallback;
+import com.thomaskioko.moviemaniac.interfaces.MovieDetailCallback;
+import com.thomaskioko.moviemaniac.data.tasks.DatabaseAsyncTask;
 import com.thomaskioko.moviemaniac.model.Movie;
 import com.thomaskioko.moviemaniac.model.Result;
+import com.thomaskioko.moviemaniac.ui.MovieListActivity;
 import com.thomaskioko.moviemaniac.ui.adapters.MoviesRecyclerViewAdapter;
 import com.thomaskioko.moviemaniac.util.ApplicationConstants;
 import com.thomaskioko.moviemaniac.util.SharedPreferenceManager;
@@ -42,7 +44,7 @@ import retrofit2.Response;
  *
  * @author Thomas Kioko
  */
-public class MovieFragment extends Fragment {
+public class MovieFragment extends Fragment implements MovieCallback, MovieDetailCallback {
 
 
     //Views
@@ -54,9 +56,10 @@ public class MovieFragment extends Fragment {
     ProgressBar mProgressView;
 
     private boolean mIsFetching = false;
-    private String movieListType;
+    private String mMovieListType;
     private TmdbApiClient mTmdbApiClient;
     private MoviesRecyclerViewAdapter mRecyclerViewAdapter;
+    private MovieDetailCallback mMovieDetailCallback;
     private SharedPreferenceManager sharedPreferenceManager;
     private List<Result> mResultList = new ArrayList<>();
     private static final String LOG_TAG = MovieFragment.class.getSimpleName();
@@ -85,21 +88,19 @@ public class MovieFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         int NUMBER_OF_GRID_ITEMS;
-        if (MovieManiacApplication.isTwoPane) {
+        if (MovieListActivity.isTwoPane) {
             NUMBER_OF_GRID_ITEMS = 4;
         } else {
             NUMBER_OF_GRID_ITEMS = 3;
         }
 
-        mRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getActivity(), getFragmentManager(),
-                MovieManiacApplication.isTwoPane, mResultList);
+        mRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getActivity(), mResultList);
+        mRecyclerViewAdapter.setMovieDetailCallback(this);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), NUMBER_OF_GRID_ITEMS);
         assert mRecyclerView != null;
         mRecyclerView.setLayoutManager(gridLayoutManager);
-
-        //Load popular movies as the default
-        getPopularMovies();
+        mRecyclerView.setAdapter(mRecyclerViewAdapter);
 
         return rootView;
     }
@@ -108,20 +109,17 @@ public class MovieFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            movieListType = sharedPreferenceManager.getMovieType();
-            fetchMovies(movieListType);
-        } else {
-            movieListType = savedInstanceState.getString(ApplicationConstants.KEY_MOVIE_LIST_TYPE);
-            mRecyclerView.smoothScrollToPosition(savedInstanceState.getInt(ApplicationConstants.KEY_LIST_POSITION));
-            ArrayList<Result> resultArrayList = savedInstanceState.getParcelableArrayList(ApplicationConstants.KEY_MOVIE_OBJECTS);
+        MovieListActivity.setCallback(this);
+        mMovieDetailCallback = (MovieDetailCallback) getActivity();
+        mMovieListType = sharedPreferenceManager.getMovieType();
 
-            if (resultArrayList != null) {
-                for (Result result : resultArrayList) {
-                    mResultList.add(result);
-                    mRecyclerView.setAdapter(mRecyclerViewAdapter);
-                }
-            }
+        if (savedInstanceState == null) {
+            fetchMovies(mMovieListType);
+        } else {
+            ArrayList<Result> resultArrayList = savedInstanceState.getParcelableArrayList(ApplicationConstants.KEY_MOVIE_OBJECTS);
+            mMovieListType = savedInstanceState.getString(ApplicationConstants.KEY_MOVIE_LIST_TYPE);
+            mRecyclerView.smoothScrollToPosition(savedInstanceState.getInt(ApplicationConstants.KEY_LIST_POSITION));
+            populateRecyclerView(mMovieListType, resultArrayList);
         }
     }
 
@@ -153,23 +151,20 @@ public class MovieFragment extends Fragment {
         if (!mIsFetching && !item.isChecked() && itemId != R.id.action_sort) {
             switch (itemId) {
                 case R.id.action_popular:
-                    Log.d(LOG_TAG, "Popular");
-                    getActivity().setTitle("Popular");
-                    movieListType = ApplicationConstants.PREF_MOVIE_LIST_POPULAR;
+                    getActivity().setTitle(getString(R.string.menu_action_popular));
+                    mMovieListType = ApplicationConstants.PREF_MOVIE_LIST_POPULAR;
                     break;
                 case R.id.action_top_rated:
-                    Log.d(LOG_TAG, "Top Rated");
-                    getActivity().setTitle("Top Rated");
-                    movieListType = ApplicationConstants.PREF_MOVIE_LIST_TOP_RATED;
+                    getActivity().setTitle(getString(R.string.menu_action_top_rated));
+                    mMovieListType = ApplicationConstants.PREF_MOVIE_LIST_TOP_RATED;
                     break;
                 case R.id.action_favorites:
-                    Log.d(LOG_TAG, "Favorites");
-                    getActivity().setTitle("Favorites");
-                    movieListType = ApplicationConstants.PREF_MOVIE_LIST_FAVORITES;
+                    getActivity().setTitle(getString(R.string.menu_action_favorites));
+                    mMovieListType = ApplicationConstants.PREF_MOVIE_LIST_FAVORITES;
                     break;
             }
             item.setChecked(true);
-            fetchMovies(movieListType);
+            fetchMovies(mMovieListType);
         }
 
         return super.onOptionsItemSelected(item);
@@ -194,7 +189,7 @@ public class MovieFragment extends Fragment {
                 saveMovieType(ApplicationConstants.PREF_MOVIE_LIST_TOP_RATED);
                 break;
             case ApplicationConstants.PREF_MOVIE_LIST_FAVORITES:
-                getFavoriteMovies();
+                new DatabaseAsyncTask(this, getActivity(), null).execute(ApplicationConstants.TASK_QUERY_FAVORITE_LIST, null);
                 saveMovieType(ApplicationConstants.PREF_MOVIE_LIST_FAVORITES);
                 break;
             default:
@@ -218,7 +213,6 @@ public class MovieFragment extends Fragment {
      */
     private void getPopularMovies() {
         mResultList.clear();
-        mRecyclerView.setAdapter(null);
         toggleProgressBar(true);
 
         Call<Movie> topRatedList = mTmdbApiClient.movieInterface().getPopularMovies();
@@ -228,16 +222,7 @@ public class MovieFragment extends Fragment {
                 toggleProgressBar(false);
                 mIsFetching = false;
                 mEmptyView.setVisibility(View.GONE);
-
-                for (Result result : response.body().getResults()) {
-                    mResultList.add(result);
-                    mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(
-                            getActivity(),
-                            getFragmentManager(),
-                            MovieManiacApplication.isTwoPane,
-                            mResultList)
-                    );
-                }
+                populateRecyclerView(mMovieListType, new ArrayList<>(response.body().getResults()));
             }
 
             @Override
@@ -255,7 +240,6 @@ public class MovieFragment extends Fragment {
      */
     private void getTopRatedMovies() {
         mResultList.clear();
-        mRecyclerView.setAdapter(null);
         toggleProgressBar(true);
 
         Call<Movie> topRatedList = mTmdbApiClient.movieInterface().getTopRatedMovies();
@@ -265,15 +249,7 @@ public class MovieFragment extends Fragment {
                 toggleProgressBar(false);
                 mIsFetching = false;
                 mEmptyView.setVisibility(View.GONE);
-                for (Result result : response.body().getResults()) {
-                    mResultList.add(result);
-                    mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(
-                            getActivity(),
-                            getFragmentManager(),
-                            MovieManiacApplication.isTwoPane,
-                            mResultList)
-                    );
-                }
+                populateRecyclerView(mMovieListType, new ArrayList<>(response.body().getResults()));
             }
 
             @Override
@@ -287,40 +263,12 @@ public class MovieFragment extends Fragment {
     }
 
 
-    /**
-     * Method to get favorite movies from {@link com.thomaskioko.moviemaniac.data.FavoriteMovieDbHelper}
-     */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private void getFavoriteMovies() {
-
-        mResultList.clear();
-        mRecyclerView.setAdapter(null);
-
-        DbUtils dbUtils = new DbUtils(getActivity());
-        mResultList = dbUtils.getFavoriteMovies();
-
-        if (mResultList.size() > -1) {
-            mRecyclerView.setAdapter(new MoviesRecyclerViewAdapter(
-                    getActivity(),
-                    getFragmentManager(),
-                    MovieManiacApplication.isTwoPane,
-                    mResultList)
-            );
-
-            toggleProgressBar(false);
-            mIsFetching = false;
-            mEmptyView.setVisibility(View.GONE);
-        } else {
-            mEmptyView.setVisibility(View.VISIBLE);
-        }
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(ApplicationConstants.KEY_MOVIE_OBJECTS, mRecyclerViewAdapter.getMovieObjects());
+        outState.putParcelableArrayList(ApplicationConstants.KEY_MOVIE_OBJECTS, (ArrayList<? extends Parcelable>) mResultList);
         outState.putInt(ApplicationConstants.KEY_LIST_POSITION, mRecyclerViewAdapter.getPosition());
-        outState.putString(ApplicationConstants.KEY_MOVIE_LIST_TYPE, movieListType);
+        outState.putString(ApplicationConstants.KEY_MOVIE_LIST_TYPE, mMovieListType);
     }
 
     /**
@@ -331,5 +279,59 @@ public class MovieFragment extends Fragment {
     private void saveMovieType(String movieType) {
         sharedPreferenceManager.saveToSharedPreferences(
                 getString(R.string.prefs_key_type), movieType);
+    }
+
+    @Override
+    public void CallbackRequest(String request, Bundle bundle) {
+        mMovieDetailCallback.CallbackRequest(ApplicationConstants.CALLBACK_MOVIE_BUNDLE, bundle);
+    }
+
+    @Override
+    public void CallbackRequest(String requestType, String bundleData) {
+        if (requestType.equals(ApplicationConstants.CALLBACK_REFRESH_FAVORITES) && !mIsFetching) {
+            fetchMovies(mMovieListType);
+        }
+    }
+
+    @Override
+    public void CallbackRequest(String requestType, ArrayList<Result> resultArrayList) {
+        populateRecyclerView(mMovieListType, resultArrayList);
+        saveMovieType(mMovieListType);
+        mIsFetching = false;
+        toggleProgressBar(false);
+    }
+
+    /**
+     * Helper method to load items to the recyclerView
+     *
+     * @param movieListType   Type of movie to display
+     * @param resultArrayList {@link Result} Movie objects
+     */
+    private void populateRecyclerView(String movieListType, ArrayList<Result> resultArrayList) {
+        if (resultArrayList == null || resultArrayList.size() == 0) {
+            if (ApplicationConstants.PREF_MOVIE_LIST_FAVORITES.equals(movieListType)) {
+                mRecyclerViewAdapter.reloadRecyclerView(false, new ArrayList<Result>());
+                mEmptyView.setVisibility(View.VISIBLE);
+                mEmptyView.setText(getString(R.string.no_favorite_movie_text));
+            } else {
+                if (movieListType.equals(sharedPreferenceManager.getMovieType()))
+                    mRecyclerViewAdapter.reloadRecyclerView(true, new ArrayList<Result>());
+                else {
+                    //ToDo check network
+                    mRecyclerViewAdapter.reloadRecyclerView(false, new ArrayList<Result>());
+                    mEmptyView.setVisibility(View.VISIBLE);
+                    mEmptyView.setText(getString(R.string.no_network_text));
+                }
+            }
+        } else {
+            if (ApplicationConstants.PREF_MOVIE_LIST_FAVORITES.equals(movieListType)) {
+                mRecyclerViewAdapter.reloadRecyclerView(false, resultArrayList);
+                mRecyclerView.scrollToPosition(0);
+                toggleProgressBar(false);
+            } else {
+                mRecyclerViewAdapter.reloadRecyclerView(true, resultArrayList);
+                toggleProgressBar(false);
+            }
+        }
     }
 }
