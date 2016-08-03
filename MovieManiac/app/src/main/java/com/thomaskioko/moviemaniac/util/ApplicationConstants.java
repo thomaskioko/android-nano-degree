@@ -86,4 +86,8 @@ public class ApplicationConstants {
     public static final String PREF_MOVIE_LIST_POPULAR = "popular";
     public static final String PREF_MOVIE_LIST_TOP_RATED = "top_rated";
     public static final String PREF_MOVIE_LIST_FAVORITES = "favorites";
+
+    public static final String KEY_MOVIE_OBJECTS = "KEY_MOVIE_OBJECTS";
+    public static final String KEY_MOVIE_LIST_TYPE = "KEY_MOVIE_LIST_TYPE";
+    public static final String KEY_LIST_POSITION = "KEY_LIST_POSITION";
 }
