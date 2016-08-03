@@ -25,9 +25,11 @@ Once you have it, open `gradle.properties` file and paste your API key in `TMDB_
     <p align="center">
   <img src="https://github.com/kioko/android-nano-degree/blob/master/MovieManiac/art/PhoneView.png?raw=true" alt="Final Result" width="250"/>
 </p>
-<p align="center">
-  <img src="https://github.com/kioko/android-nano-degree/blob/master/MovieManiac/art/PhoneView-MovieDetail.png?raw=true" alt="Final Result" width="250"/>
-</p>
+</td>
+<td>
+    <p align="center">
+      <img src="https://github.com/kioko/android-nano-degree/blob/master/MovieManiac/art/PhoneView-MovieDetail.png?raw=true" alt="Final Result" width="250"/>
+    </p>
   </td>
   
   <td>
