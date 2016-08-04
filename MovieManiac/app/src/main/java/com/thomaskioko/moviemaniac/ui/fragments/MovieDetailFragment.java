@@ -124,7 +124,7 @@ public class MovieDetailFragment extends Fragment implements MovieCallback {
         sharedPreferenceManager = new SharedPreferenceManager(getActivity());
         mTmdbApiClient = MovieManiacApplication.getTmdbApiClient();
 
-//        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
