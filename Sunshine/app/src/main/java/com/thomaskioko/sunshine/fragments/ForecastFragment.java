@@ -121,6 +121,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 null, null, null, sortOrder);
 
         updateEmptyViewMessage();
+        if (cursor != null){
+            mEmptyTextView.setVisibility(View.GONE);
+        }
 
         mForecastAdapter = new ForecastAdapter(getActivity(), cursor, 0);
 
@@ -157,6 +160,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         }
 
         mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+
+        if (cursor != null) {
+            cursor.close();
+        }
 
         return rootView;
     }
@@ -204,7 +211,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         if (preferenceKey.equals(getString(R.string.pref_location_status_key))) {
             updateEmptyViewMessage();
         }
-        updateEmptyViewMessage();
     }
 
     /**
@@ -286,35 +292,28 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
      */
     private void updateEmptyViewMessage() {
         // if cursor is empty, why? do we have an invalid location
-        int message;
+        int message = R.string.empty_forecast_list;
         @SharedPrefsManager.LocationStatus int locationStatus = SharedPrefsManager.getLocationStatus(getActivity());
         switch (locationStatus) {
             case SharedPrefsManager.LOCATION_STATUS_SERVER_DOWN:
                 message = R.string.empty_forecast_list_server_down;
-                mEmptyTextView.setText(message);
                 break;
             case SharedPrefsManager.LOCATION_STATUS_SERVER_INVALID:
                 message = R.string.empty_forecast_list_server_error;
-                mEmptyTextView.setText(message);
                 break;
             case SharedPrefsManager.LOCATION_STATUS_UNKNOWN:
                 message = R.string.empty_forecast_list;
-                mEmptyTextView.setText(message);
-                break;
-            case SharedPrefsManager.LOCATION_STATUS_OK:
-                mEmptyTextView.setVisibility(View.GONE);
                 break;
             case SharedPrefsManager.LOCATION_STATUS_INVALID:
                 message = R.string.empty_forecast_list_invalid_location;
-                mEmptyTextView.setText(message);
                 break;
             default:
                 if (DeviceUtils.isNetworkConnected(getActivity())) {
                     message = R.string.empty_forecast_list_no_network;
-                    mEmptyTextView.setText(message);
                 }
                 break;
         }
+        mEmptyTextView.setText(message);
 
     }
 

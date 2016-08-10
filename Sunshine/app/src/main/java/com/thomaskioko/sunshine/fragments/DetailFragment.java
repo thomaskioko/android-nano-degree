@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.thomaskioko.sunshine.R;
 import com.thomaskioko.sunshine.SettingsActivity;
 import com.thomaskioko.sunshine.data.WeatherContract;
@@ -174,8 +175,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             // Read weather condition ID from cursor
             int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
 
-            // Use weather art image
-            mIconView.setImageResource(StringUtils.getArtResourceForWeatherCondition(weatherId));
+            // Use {@link Glide} to load weather art image
+            Glide.with(this)
+                    .load(StringUtils.getArtUrlForWeatherCondition(getActivity(), weatherId))
+                    .error(StringUtils.getArtResourceForWeatherCondition(weatherId))
+                    .into(mIconView);
 
             // Read date from cursor and update views for day of week and date
             long date = data.getLong(COL_WEATHER_DATE);
@@ -185,8 +189,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mDateView.setText(dateText);
 
             // Read description from cursor and update view
-            String description = data.getString(COL_WEATHER_DESC);
+            // Get description from weather condition ID
+            String description = StringUtils.getStringForWeatherCondition(getActivity(), weatherId);
             mDescriptionView.setText(description);
+            mDescriptionView.setContentDescription(getString(R.string.a11y_forecast, description));
 
             // For accessibility, add a content description to the icon field
             mIconView.setContentDescription(description);
