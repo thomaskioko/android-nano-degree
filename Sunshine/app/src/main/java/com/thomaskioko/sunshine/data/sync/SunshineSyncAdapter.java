@@ -33,8 +33,10 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
 
     /**
-     * @param context
-     * @param autoInitialize
+     * Constructor
+     *
+     * @param context        Context
+     * @param autoInitialize {@link Boolean}
      */
     public SunshineSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
