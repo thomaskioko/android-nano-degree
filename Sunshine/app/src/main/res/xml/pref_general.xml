@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <EditTextPreference
+    <com.thomaskioko.sunshine.ui.views.LocationEditTextPreference
         android:defaultValue="@string/pref_default_value_location"
         android:inputType="text"
         android:key="@string/pref_key_location"
         android:singleLine="true"
-        android:title="@string/pref_title_location" />
+        android:title="@string/pref_title_location"
+        app:minLength="3" />
 
     <ListPreference
         android:defaultValue="@string/pref_default_value_metric"
@@ -17,9 +19,9 @@
         android:title="@string/pref_title_metrics" />
 
     <CheckBoxPreference
-        android:title="@string/pref_enable_notifications_label"
+        android:defaultValue="@string/pref_enable_notifications_default"
         android:key="@string/pref_enable_notifications_key"
         android:summaryOff="@string/pref_enable_notifications_false"
         android:summaryOn="@string/pref_enable_notifications_true"
-        android:defaultValue="@string/pref_enable_notifications_default" />
+        android:title="@string/pref_enable_notifications_label" />
 </PreferenceScreen>
