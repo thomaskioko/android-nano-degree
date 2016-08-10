@@ -5,9 +5,20 @@
     tools:context=".MainActivity$ForecastFragment">
 
     <ListView
-        style="@style/ForecastListStyle"
         android:id="@+id/list_view_forecast"
+        style="@style/ForecastListStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-condensed"/>
 
 </FrameLayout>
