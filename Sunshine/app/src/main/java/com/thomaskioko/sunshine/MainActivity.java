@@ -11,6 +11,11 @@ import com.thomaskioko.sunshine.data.sync.SunshineSyncAdapter;
 import com.thomaskioko.sunshine.fragments.DetailFragment;
 import com.thomaskioko.sunshine.fragments.ForecastFragment;
 
+/**
+ * Main activity called when the app first starts.
+ *
+ * @author Thomas Kioko
+ */
 public class MainActivity extends AppCompatActivity implements ForecastFragment.Callback {
 
     private String mLocation;
@@ -39,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         //Initialize the sync adapter
         SunshineSyncAdapter.initializeSyncAdapter(this);
 
-        ForecastFragment forecastFragment =  ((ForecastFragment)getSupportFragmentManager()
+        ForecastFragment forecastFragment = ((ForecastFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment_forecast));
         forecastFragment.setUseTodayLayout(!mTwoPane);
 
