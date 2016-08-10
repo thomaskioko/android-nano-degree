@@ -10,13 +10,18 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 
+import com.bumptech.glide.Glide;
 import com.thomaskioko.sunshine.MainActivity;
 import com.thomaskioko.sunshine.R;
 import com.thomaskioko.sunshine.data.WeatherContract;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class handles notification functions.
@@ -41,6 +46,7 @@ public class NotificationUtils {
 
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     private static final int WEATHER_NOTIFICATION_ID = 3004;
+    private static final String LOG_TAG = NotificationUtils.class.getSimpleName();
 
     /**
      * Constructor
@@ -82,8 +88,29 @@ public class NotificationUtils {
 
                     int iconId = StringUtils.getIconResourceForWeatherCondition(weatherId);
                     Resources resources = mContext.getResources();
-                    Bitmap largeIcon = BitmapFactory.decodeResource(resources,
-                            StringUtils.getArtResourceForWeatherCondition(weatherId));
+                    int artResourceId = StringUtils.getArtResourceForWeatherCondition(weatherId);
+                    String artUrl = StringUtils.getArtUrlForWeatherCondition(mContext, weatherId);
+
+                    int largeIconWidth = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                            ? resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_width)
+                            : resources.getDimensionPixelSize(R.dimen.notification_large_icon_default);
+
+                    int largeIconHeight = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                            ? resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_width)
+                            : resources.getDimensionPixelSize(R.dimen.notification_large_icon_default);
+
+                    Bitmap largeIcon;
+                    try {
+                        largeIcon = Glide.with(mContext)
+                                .load(artUrl)
+                                .asBitmap()
+                                .error(artResourceId)
+                                .into(largeIconWidth, largeIconHeight)
+                                .get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        Log.e(LOG_TAG, e.getLocalizedMessage());
+                        largeIcon = BitmapFactory.decodeResource(resources, artResourceId);
+                    }
                     String title = mContext.getString(R.string.app_name);
 
                     // Define the text of the forecast.

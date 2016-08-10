@@ -8,4 +8,7 @@
 
     <!-- TextSize-->
     <dimen name="text_size_medium">18sp</dimen>
+
+    <!-- Large Notification Icon Dimensions -->
+    <dimen name="notification_large_icon_default">48dp</dimen>
 </resources>
