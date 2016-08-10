@@ -15,11 +15,13 @@ import com.thomaskioko.sunshine.R;
 import com.thomaskioko.sunshine.data.WeatherContract;
 import com.thomaskioko.sunshine.data.WeatherDbHelper;
 import com.thomaskioko.sunshine.util.NotificationUtils;
+import com.thomaskioko.sunshine.util.SharedPrefsManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Vector;
@@ -64,6 +66,7 @@ public class JsonParser {
 
         // These are the names of the JSON objects that need to be extracted.
 
+        final String HTTP_STATUS_CODE = "cod";
         // Location information
         final String OWM_CITY = "city";
         final String OWM_CITY_NAME = "name";
@@ -92,7 +95,23 @@ public class JsonParser {
 
         try {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
+
+            if (forecastJson.has(HTTP_STATUS_CODE)) {
+                int statusCode = forecastJson.getInt(HTTP_STATUS_CODE);
+                switch (statusCode) {
+                    case HttpURLConnection.HTTP_OK:
+                        SharedPrefsManager.setLocationStatus(mContext, SharedPrefsManager.LOCATION_STATUS_OK);
+                        break;
+                    case HttpURLConnection.HTTP_NOT_FOUND:
+                        SharedPrefsManager.setLocationStatus(mContext, SharedPrefsManager.LOCATION_STATUS_INVALID);
+                        break;
+                    default:
+                        SharedPrefsManager.setLocationStatus(mContext, SharedPrefsManager.LOCATION_STATUS_SERVER_DOWN);
+                        break;
+                }
+            }
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
+
 
             JSONObject cityJson = forecastJson.getJSONObject(OWM_CITY);
             String cityName = cityJson.getString(OWM_CITY_NAME);
@@ -180,11 +199,13 @@ public class JsonParser {
                 // delete old data so we don't build up an endless history
                 mContext.getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
                         WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
-                        new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
+                        new String[]{Long.toString(dayTime.setJulianDay(julianStartDay - 1))});
 
                 NotificationUtils notificationUtils = new NotificationUtils(mContext);
                 notificationUtils.notifyWeather();
             }
+
+            SharedPrefsManager.setLocationStatus(mContext, SharedPrefsManager.LOCATION_STATUS_OK);
 
             // Sort order:  Ascending, by date.
             String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
@@ -213,6 +234,7 @@ public class JsonParser {
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            SharedPrefsManager.setLocationStatus(mContext, SharedPrefsManager.LOCATION_STATUS_SERVER_INVALID);
         }
         return null;
     }

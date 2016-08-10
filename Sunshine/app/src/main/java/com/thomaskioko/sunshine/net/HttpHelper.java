@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.thomaskioko.sunshine.BuildConfig;
+import com.thomaskioko.sunshine.util.SharedPrefsManager;
 
 import org.json.JSONException;
 
@@ -97,6 +98,7 @@ public class HttpHelper {
 
             if (buffer.length() == 0) {
                 // Stream was empty.  No point in parsing.
+                SharedPrefsManager.setLocationStatus(mContext, SharedPrefsManager.LOCATION_STATUS_SERVER_DOWN);
                 return null;
             }
             JsonParser jsonParser = new JsonParser(mContext);
@@ -107,9 +109,11 @@ public class HttpHelper {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
+            SharedPrefsManager.setLocationStatus(mContext, SharedPrefsManager.LOCATION_STATUS_SERVER_DOWN);
             return null;
         } catch (JSONException e) {
             e.printStackTrace();
+            SharedPrefsManager.setLocationStatus(mContext, SharedPrefsManager.LOCATION_STATUS_SERVER_INVALID);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

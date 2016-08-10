@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thomaskioko.sunshine.R;
@@ -26,17 +27,25 @@ import com.thomaskioko.sunshine.SettingsActivity;
 import com.thomaskioko.sunshine.data.WeatherContract;
 import com.thomaskioko.sunshine.data.sync.SunshineSyncAdapter;
 import com.thomaskioko.sunshine.ui.adapters.ForecastAdapter;
+import com.thomaskioko.sunshine.util.DeviceUtils;
+import com.thomaskioko.sunshine.util.SharedPrefsManager;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * @author Thomas Kioko
  */
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
+    @Bind(R.id.list_view_forecast)
+    ListView mListView;
+    @Bind(R.id.empty_view)
+    TextView mEmptyTextView;
     private ForecastAdapter mForecastAdapter;
-    private SharedPreferences mSharedPreferences;
     private String mLocation;
     private static final int LOADER_ID = 100;
-    private ListView mListView;
     private int mPosition = ListView.INVALID_POSITION;
     private boolean mUseTodayLayout;
     private static final String SELECTED_KEY = "selected_position";
@@ -93,7 +102,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         //Enable the fragment to handle menu events
         setHasOptionsMenu(true);
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mLocation = mSharedPreferences.getString(getString(R.string.pref_key_location), getString(R.string.pref_default_value_location));
     }
 
@@ -101,6 +110,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        ButterKnife.bind(this, rootView);
 
         // Sort order:  Ascending, by date.
         String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
@@ -109,6 +119,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         Cursor cursor = getActivity().getContentResolver().query(weatherForLocationUri,
                 null, null, null, sortOrder);
+
+        updateEmptyViewMessage();
 
         mForecastAdapter = new ForecastAdapter(getActivity(), cursor, 0);
 
@@ -187,6 +199,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String preferenceKey) {
+        if (preferenceKey.equals(getString(R.string.pref_location_status_key))) {
+            updateEmptyViewMessage();
+        }
+        updateEmptyViewMessage();
+    }
+
     /**
      *
      */
@@ -259,6 +279,43 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         if (mForecastAdapter != null) {
             mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
         }
+    }
+
+    /**
+     * Helper method to update the textView message when there is an error.
+     */
+    private void updateEmptyViewMessage() {
+        // if cursor is empty, why? do we have an invalid location
+        int message;
+        @SharedPrefsManager.LocationStatus int locationStatus = SharedPrefsManager.getLocationStatus(getActivity());
+        switch (locationStatus) {
+            case SharedPrefsManager.LOCATION_STATUS_SERVER_DOWN:
+                message = R.string.empty_forecast_list_server_down;
+                mEmptyTextView.setText(message);
+                break;
+            case SharedPrefsManager.LOCATION_STATUS_SERVER_INVALID:
+                message = R.string.empty_forecast_list_server_error;
+                mEmptyTextView.setText(message);
+                break;
+            case SharedPrefsManager.LOCATION_STATUS_UNKNOWN:
+                message = R.string.empty_forecast_list;
+                mEmptyTextView.setText(message);
+                break;
+            case SharedPrefsManager.LOCATION_STATUS_OK:
+                mEmptyTextView.setVisibility(View.GONE);
+                break;
+            case SharedPrefsManager.LOCATION_STATUS_INVALID:
+                message = R.string.empty_forecast_list_invalid_location;
+                mEmptyTextView.setText(message);
+                break;
+            default:
+                if (DeviceUtils.isNetworkConnected(getActivity())) {
+                    message = R.string.empty_forecast_list_no_network;
+                    mEmptyTextView.setText(message);
+                }
+                break;
+        }
+
     }
 
 }

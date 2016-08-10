@@ -80,17 +80,17 @@ public class NotificationUtils {
                     double low = cursor.getDouble(INDEX_MIN_TEMP);
                     String desc = cursor.getString(INDEX_SHORT_DESC);
 
-                    int iconId = Utility.getIconResourceForWeatherCondition(weatherId);
+                    int iconId = StringUtils.getIconResourceForWeatherCondition(weatherId);
                     Resources resources = mContext.getResources();
                     Bitmap largeIcon = BitmapFactory.decodeResource(resources,
-                            Utility.getArtResourceForWeatherCondition(weatherId));
+                            StringUtils.getArtResourceForWeatherCondition(weatherId));
                     String title = mContext.getString(R.string.app_name);
 
                     // Define the text of the forecast.
                     String contentText = String.format(mContext.getString(R.string.format_notification),
                             desc,
-                            Utility.formatTemperature(mContext, high),
-                            Utility.formatTemperature(mContext, low));
+                            StringUtils.formatTemperature(mContext, high),
+                            StringUtils.formatTemperature(mContext, low));
 
                     // NotificationCompatBuilder is a very convenient way to build backward-compatible
                     // notifications.  Just throw in some data.
