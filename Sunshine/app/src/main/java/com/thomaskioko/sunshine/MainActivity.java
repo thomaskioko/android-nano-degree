@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.thomaskioko.sunshine.data.sync.SunshineSyncAdapter;
 import com.thomaskioko.sunshine.fragments.DetailFragment;
 import com.thomaskioko.sunshine.fragments.ForecastFragment;
+import com.thomaskioko.sunshine.util.AppConstants;
+import com.thomaskioko.sunshine.util.GcmUtils;
 
 /**
  * Main activity called when the app first starts.
@@ -26,6 +28,16 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean sentToken = mSharedPreferences.getBoolean(AppConstants.GCM_TOKEN_KEY, false);
+        if (!sentToken) {
+            //Register the device for GCM
+            GcmUtils gcmUtils = new GcmUtils(MainActivity.this, getApplicationContext());
+            if (gcmUtils.checkPlayServices()) {
+                gcmUtils.registerGCM();
+            }
+        }
 
         if (findViewById(R.id.weather_detail_container) != null) {
 
@@ -48,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                 .findFragmentById(R.id.fragment_forecast));
         forecastFragment.setUseTodayLayout(!mTwoPane);
 
-        SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         mLocation = mSharedPreferences.getString(getString(R.string.pref_key_location), getString(R.string.pref_default_value_location));
 
     }

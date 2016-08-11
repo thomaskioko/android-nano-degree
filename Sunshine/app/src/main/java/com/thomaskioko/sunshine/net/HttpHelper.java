@@ -50,7 +50,7 @@ public class HttpHelper {
 
         // Will contain the raw JSON response as a string.
         String[] forecastResult = null;
-        int numberOfDays = 7;
+        int numberOfDays = 14;
         String format = "json";
         try {
 
