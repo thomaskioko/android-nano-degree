@@ -95,14 +95,12 @@ public class ForecastAdapter extends CursorAdapter {
         switch (viewType) {
             case VIEW_TYPE_TODAY: {
                 // Get weather icon
-                fallbackIconId = StringUtils.getArtResourceForWeatherCondition(
-                        cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID));
+                fallbackIconId = StringUtils.getArtResourceForWeatherCondition(weatherId);
                 break;
             }
             case VIEW_TYPE_FUTURE_DAY: {
                 // Get weather icon
-                fallbackIconId = StringUtils.getIconResourceForWeatherCondition(
-                        cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID));
+                fallbackIconId = StringUtils.getIconResourceForWeatherCondition(weatherId);
                 break;
             }
         }
@@ -119,9 +117,10 @@ public class ForecastAdapter extends CursorAdapter {
         viewHolder.dateView.setText(StringUtils.getFriendlyDayString(context, dateInMillis));
 
         // Read weather forecast from cursor
-        String description = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
+        String description = StringUtils.getStringForWeatherCondition(context, weatherId);
         // Find TextView and set weather forecast on it
         viewHolder.descriptionView.setText(description);
+        viewHolder.descriptionView.setContentDescription(context.getString(R.string.a11y_forecast, description));
 
         viewHolder.iconView.setContentDescription(description);
         // Read user preference for metric or imperial temperature units
