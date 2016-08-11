@@ -10,13 +10,18 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 
+import com.bumptech.glide.Glide;
 import com.thomaskioko.sunshine.MainActivity;
 import com.thomaskioko.sunshine.R;
 import com.thomaskioko.sunshine.data.WeatherContract;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class handles notification functions.
@@ -41,6 +46,7 @@ public class NotificationUtils {
 
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     private static final int WEATHER_NOTIFICATION_ID = 3004;
+    private static final String LOG_TAG = NotificationUtils.class.getSimpleName();
 
     /**
      * Constructor
@@ -82,8 +88,29 @@ public class NotificationUtils {
 
                     int iconId = StringUtils.getIconResourceForWeatherCondition(weatherId);
                     Resources resources = mContext.getResources();
-                    Bitmap largeIcon = BitmapFactory.decodeResource(resources,
-                            StringUtils.getArtResourceForWeatherCondition(weatherId));
+                    int artResourceId = StringUtils.getArtResourceForWeatherCondition(weatherId);
+                    String artUrl = StringUtils.getArtUrlForWeatherCondition(mContext, weatherId);
+
+                    int largeIconWidth = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                            ? resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_width)
+                            : resources.getDimensionPixelSize(R.dimen.notification_large_icon_default);
+
+                    int largeIconHeight = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                            ? resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_width)
+                            : resources.getDimensionPixelSize(R.dimen.notification_large_icon_default);
+
+                    Bitmap largeIcon;
+                    try {
+                        largeIcon = Glide.with(mContext)
+                                .load(artUrl)
+                                .asBitmap()
+                                .error(artResourceId)
+                                .into(largeIconWidth, largeIconHeight)
+                                .get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        Log.e(LOG_TAG, e.getLocalizedMessage());
+                        largeIcon = BitmapFactory.decodeResource(resources, artResourceId);
+                    }
                     String title = mContext.getString(R.string.app_name);
 
                     // Define the text of the forecast.
@@ -133,5 +160,35 @@ public class NotificationUtils {
                 }
             }
         }
+    }
+
+    /**
+     *  Put the message into a notification and post it.
+     *  This is just one simple example of what you might choose to do with a GCM message.
+     *
+     * @param message The alert message to be posted.
+     */
+    public static void sendNotification(Context context, String message) {
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        PendingIntent contentIntent =
+                PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), 0);
+
+        // Notifications using both a large and a small icon (which yours should!) need the large
+        // icon as a bitmap. So we need to create that here from the resource ID, and pass the
+        // object along in our notification builder. Generally, you want to use the app icon as the
+        // small icon, so that users understand what app is triggering this notification.
+        Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.art_storm);
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.art_clear)
+                        .setLargeIcon(largeIcon)
+                        .setContentTitle("Weather Alert!")
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                        .setContentText(message)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+        mBuilder.setContentIntent(contentIntent);
+        mBuilder.setAutoCancel(true);
+        mNotificationManager.notify(AppConstants.NOTIFICATION_ID, mBuilder.build());
     }
 }
