@@ -161,4 +161,34 @@ public class NotificationUtils {
             }
         }
     }
+
+    /**
+     *  Put the message into a notification and post it.
+     *  This is just one simple example of what you might choose to do with a GCM message.
+     *
+     * @param message The alert message to be posted.
+     */
+    public static void sendNotification(Context context, String message) {
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        PendingIntent contentIntent =
+                PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), 0);
+
+        // Notifications using both a large and a small icon (which yours should!) need the large
+        // icon as a bitmap. So we need to create that here from the resource ID, and pass the
+        // object along in our notification builder. Generally, you want to use the app icon as the
+        // small icon, so that users understand what app is triggering this notification.
+        Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.art_storm);
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.art_clear)
+                        .setLargeIcon(largeIcon)
+                        .setContentTitle("Weather Alert!")
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                        .setContentText(message)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+        mBuilder.setContentIntent(contentIntent);
+        mBuilder.setAutoCancel(true);
+        mNotificationManager.notify(AppConstants.NOTIFICATION_ID, mBuilder.build());
+    }
 }
