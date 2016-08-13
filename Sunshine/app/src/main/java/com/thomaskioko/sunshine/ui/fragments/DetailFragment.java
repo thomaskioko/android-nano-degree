@@ -1,4 +1,4 @@
-package com.thomaskioko.sunshine.fragments;
+package com.thomaskioko.sunshine.ui.fragments;
 
 
 import android.content.Intent;
