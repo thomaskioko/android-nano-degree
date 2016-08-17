@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import android.widget.Toast;
 import com.thomaskioko.sunshine.R;
 import com.thomaskioko.sunshine.data.WeatherContract;
 import com.thomaskioko.sunshine.net.HttpHelper;
-import com.thomaskioko.sunshine.ui.adapters.ForecastAdapter;
 
 
 public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
@@ -58,10 +56,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
                     mLocation, System.currentTimeMillis());
 
-            Cursor cursor = getContext().getContentResolver().query(weatherForLocationUri,
-                    null, null, null, sortOrder);
 
-            new ForecastAdapter(getContext().getApplicationContext(), cursor, 0);
         } else {
             Toast.makeText(getContext(), "Could not get location" + mLocation, Toast.LENGTH_SHORT).show();
         }
