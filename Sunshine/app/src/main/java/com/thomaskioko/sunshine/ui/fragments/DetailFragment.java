@@ -47,27 +47,27 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public static final String DETAIL_TRANSITION_ANIMATION = "DTA";
     private boolean mTransitionAnimation;
     @Bind(R.id.detail_icon)
-    private ImageView mIconView;
+    ImageView mIconView;
     @Bind(R.id.detail_date_textview)
-    private TextView mDateView;
+    TextView mDateView;
     @Bind(R.id.detail_forecast_textview)
-    private TextView mDescriptionView;
+    TextView mDescriptionView;
     @Bind(R.id.detail_high_textview)
-    private TextView mHighTempView;
+    TextView mHighTempView;
     @Bind(R.id.detail_low_textview)
-    private TextView mLowTempView;
+    TextView mLowTempView;
     @Bind(R.id.detail_humidity_textview)
-    private TextView mHumidityView;
+    TextView mHumidityView;
     @Bind(R.id.detail_humidity_label_textview)
-    private TextView mHumidityLabelView;
+    TextView mHumidityLabelView;
     @Bind(R.id.detail_wind_textview)
-    private TextView mWindView;
+    TextView mWindView;
     @Bind(R.id.detail_wind_label_textview)
-    private TextView mWindLabelView;
+    TextView mWindLabelView;
     @Bind(R.id.detail_pressure_textview)
-    private TextView mPressureView;
+    TextView mPressureView;
     @Bind(R.id.detail_pressure_label_textview)
-    private TextView mPressureLabelView;
+    TextView mPressureLabelView;
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     public DetailFragment() {
@@ -221,23 +221,23 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mForecast = String.format("%s - %s - %s/%s", dateText, description, high, low);
 
         }
-        AppCompatActivity activity = (AppCompatActivity)getActivity();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
         Toolbar toolbarView = (Toolbar) getView().findViewById(R.id.toolbar);
 
         // We need to start the enter transition after the data has loaded
-        if ( mTransitionAnimation ) {
+        if (mTransitionAnimation) {
             activity.supportStartPostponedEnterTransition();
 
-            if ( null != toolbarView ) {
+            if (null != toolbarView) {
                 activity.setSupportActionBar(toolbarView);
 
                 activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
                 activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         } else {
-            if ( null != toolbarView ) {
+            if (null != toolbarView) {
                 Menu menu = toolbarView.getMenu();
-                if ( null != menu ) menu.clear();
+                if (null != menu) menu.clear();
                 toolbarView.inflateMenu(R.menu.menu_detail_settings);
                 finishCreatingMenu(toolbarView.getMenu());
             }
