@@ -117,6 +117,14 @@
     <string name="a11y_forecast_icon">Forecast icon: <xliff:g id="condition">%1$s</xliff:g></string>
     <string name="a11y_high_temp">High: <xliff:g id="high">%1$s</xliff:g></string>
     <string name="a11y_low_temp">Low: <xliff:g id="low">%1$s</xliff:g></string>
+    <string name="a11y_humidity">Humidity: <xliff:g id="humidity">%1$s</xliff:g></string>
+    <string name="a11y_pressure">Barometric Pressure: <xliff:g id="pressure">%1$s</xliff:g></string>
+    <string name="a11y_wind">Wind speed and direction: <xliff:g id="wind">%1$s</xliff:g></string>
+
+
+    <string name="wind">Wind</string>
+    <string name="pressure">Pressure</string>
+    <string name="humidity">Humidity</string>
 
     <!-- Weather Conditions -->
     <string name="condition_2xx">Storm</string>
@@ -180,4 +188,7 @@
 
     <!-- Used to form a severe weather alert that reads "Heads up: <weather> in <location>!" -->
     <string name="gcm_weather_alert">Heads up: %1$s in %2$s!</string>
+
+    <!-- For Shared Element Transitions -->
+    <string name="detail_icon_transition_name" translatable="false">TN_DetailIcon</string>
 </resources>
