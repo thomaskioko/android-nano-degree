@@ -45,4 +45,18 @@
 
     <dimen name="detail_card_elevation">6dp</dimen>
     <dimen name="landscape_forecast_view_width">360dp</dimen>
+    <dimen name="forecast_widget_text_size">24dp</dimen>
+    <dimen name="forecast_widget_text_width">38dp</dimen>
+
+    <!-- Today Widget -->
+    <dimen name="widget_today_default_width">110dp</dimen>
+    <dimen name="widget_today_default_height">40dp</dimen>
+    <dimen name="widget_today_min_resize_width">40dp</dimen>
+    <dimen name="widget_today_min_resize_height">@dimen/widget_today_default_height</dimen>
+    <dimen name="widget_today_large_width">220dp</dimen>
+
+    <dimen name="widget_detail_default_width">250dp</dimen>
+    <dimen name="widget_detail_default_height">180dp</dimen>
+    <dimen name="widget_detail_min_resize_width">220dp</dimen>
+    <dimen name="widget_detail_min_resize_height">@dimen/widget_detail_default_height</dimen>
 </resources>

@@ -58,10 +58,24 @@ public class HttpHelper {
             final String QUERY_PARAM = "q";
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
+            final String LAT_PARAM = "lat";
+            final String LON_PARAM = "lon";
             final String APP_ID = "appid";
             final String DAYS_PARAM = "cnt";
 
-            Uri uri = Uri.parse(BASE_URL).buildUpon()
+            Uri.Builder uriBuilder = Uri.parse(BASE_URL).buildUpon();
+            String locationQuery = SharedPrefsManager.getPreferredLocation(mContext);
+            String locationLatitude = String.valueOf(SharedPrefsManager.getLocationLatitude(mContext));
+            String locationLongitude = String.valueOf(SharedPrefsManager.getLocationLongitude(mContext));
+
+            if (SharedPrefsManager.isLocationLatLonAvailable(mContext)) {
+                uriBuilder.appendQueryParameter(LAT_PARAM, locationLatitude)
+                        .appendQueryParameter(LON_PARAM, locationLongitude);
+            } else {
+                uriBuilder.appendQueryParameter(QUERY_PARAM, locationQuery);
+            }
+
+            Uri uri = uriBuilder
                     .appendQueryParameter(QUERY_PARAM, location)
                     .appendQueryParameter(UNITS_PARAM, unit)
                     .appendQueryParameter(DAYS_PARAM, String.valueOf(numberOfDays))

@@ -16,6 +16,7 @@ import com.thomaskioko.sunshine.data.WeatherContract;
 import com.thomaskioko.sunshine.data.WeatherDbHelper;
 import com.thomaskioko.sunshine.util.NotificationUtils;
 import com.thomaskioko.sunshine.util.SharedPrefsManager;
+import com.thomaskioko.sunshine.widget.util.WidgetUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -203,6 +204,9 @@ public class JsonParser {
 
                 NotificationUtils notificationUtils = new NotificationUtils(mContext);
                 notificationUtils.notifyWeather();
+
+                WidgetUtils.updateMuzei(mContext);
+                WidgetUtils.updateWidgets(mContext);
             }
 
             SharedPrefsManager.setLocationStatus(mContext, SharedPrefsManager.LOCATION_STATUS_OK);

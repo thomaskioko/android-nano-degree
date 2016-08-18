@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             //Register the device for GCM
             GcmUtils gcmUtils = new GcmUtils(MainActivity.this, getApplicationContext());
             if (gcmUtils.checkPlayServices()) {
-                gcmUtils.registerGCM();
+//                gcmUtils.registerGCM();
             }
         }
 
