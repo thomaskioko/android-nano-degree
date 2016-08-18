@@ -16,7 +16,7 @@ import com.thomaskioko.sunshine.data.WeatherContract;
 import com.thomaskioko.sunshine.data.WeatherDbHelper;
 import com.thomaskioko.sunshine.util.NotificationUtils;
 import com.thomaskioko.sunshine.util.SharedPrefsManager;
-import com.thomaskioko.sunshine.util.WidgetUtils;
+import com.thomaskioko.sunshine.widget.util.WidgetUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

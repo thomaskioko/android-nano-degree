@@ -10,7 +10,7 @@ import com.thomaskioko.sunshine.MainActivity;
 import com.thomaskioko.sunshine.data.WeatherContract;
 import com.thomaskioko.sunshine.util.SharedPrefsManager;
 import com.thomaskioko.sunshine.util.StringUtils;
-import com.thomaskioko.sunshine.util.WidgetUtils;
+import com.thomaskioko.sunshine.widget.util.WidgetUtils;
 
 /**
  * Muzei source that changes your background based on the current weather conditions
