@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Extra List Item Margin (tablet-only) -->
+    <dimen name="list_item_extra_padding">64dp</dimen>
+    <dimen name="detail_view_padding_vertical">@dimen/abc_list_item_padding_horizontal_material</dimen>
+    <dimen name="detail_view_padding">@dimen/abc_action_bar_default_height_material</dimen>
+
+    <dimen name="forecast_temperature_space">@dimen/abc_list_item_padding_horizontal_material</dimen>
+    <dimen name="detail_container_bottom_margin">@dimen/abc_action_bar_default_height_material</dimen>
+
+</resources>

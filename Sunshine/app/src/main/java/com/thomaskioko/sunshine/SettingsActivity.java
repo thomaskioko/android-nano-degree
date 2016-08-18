@@ -3,15 +3,26 @@ package com.thomaskioko.sunshine;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 import com.thomaskioko.sunshine.data.WeatherContract;
 import com.thomaskioko.sunshine.data.sync.SunshineSyncAdapter;
 import com.thomaskioko.sunshine.util.SharedPrefsManager;
+
+import java.util.Locale;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application menu_detail_settings.
@@ -26,6 +37,10 @@ import com.thomaskioko.sunshine.util.SharedPrefsManager;
 public class SettingsActivity extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private ImageView mAttribution;
+    public final static int PLACE_PICKER_REQUEST = 9090;
+    public final static String LOG_TAG = SettingsActivity.class.getSimpleName();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +52,18 @@ public class SettingsActivity extends PreferenceActivity
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_location)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_units)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_art_pack_key)));
+
+        // If we are using a PlacePicker location, we need to show attributions.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mAttribution = new ImageView(this);
+            mAttribution.setImageResource(R.drawable.powered_by_google_light);
+
+            if (!SharedPrefsManager.isLocationLatLonAvailable(this)) {
+                mAttribution.setVisibility(View.GONE);
+            }
+
+            setListFooter(mAttribution);
+        }
     }
 
     // Registers a shared preference change listener that gets notified when preferences change
@@ -89,11 +116,11 @@ public class SettingsActivity extends PreferenceActivity
         } else if (key.equals(getString(R.string.pref_key_units))) {
             // units have changed. update lists of weather entries accordingly
             getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
-        } else if ( key.equals(getString(R.string.pref_location_status_key)) ) {
+        } else if (key.equals(getString(R.string.pref_location_status_key))) {
             // our location status has changed.  Update the summary accordingly
             Preference locationPreference = findPreference(getString(R.string.pref_key_location));
             bindPreferenceSummaryToValue(locationPreference);
-        } else if ( key.equals(getString(R.string.pref_art_pack_key)) ) {
+        } else if (key.equals(getString(R.string.pref_art_pack_key))) {
             // art pack have changed. update lists of weather entries accordingly
             getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
         }
@@ -143,6 +170,61 @@ public class SettingsActivity extends PreferenceActivity
             // For other preferences, set the summary to the value's simple string representation.
             preference.setSummary(stringValue);
         }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check to see if the result is from our Place Picker intent
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(data, this);
+                String address = place.getAddress().toString();
+                LatLng latLong = place.getLatLng();
+
+                Log.i(LOG_TAG, "@onActivityResult:: " + address);
+                Log.i(LOG_TAG, "@onActivityResult:: " + latLong.latitude);
+                Log.i(LOG_TAG, "@onActivityResult:: " + latLong.longitude);
+
+                // If the provided place doesn't have an address, we'll form a display-friendly
+                // string from the latlng values.
+                if (TextUtils.isEmpty(address)) {
+                    address = String.format(Locale.getDefault(), "(%.2f, %.2f)", latLong.latitude, latLong.longitude);
+                }
+
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(getString(R.string.pref_key_location), address);
+
+                // Also store the latitude and longitude so that we can use these to get a precise
+                // result from our weather service. We cannot expect the weather service to
+                // understand addresses that Google formats.
+                editor.putFloat(getString(R.string.pref_location_latitude),  (float) latLong.latitude);
+                editor.putFloat(getString(R.string.pref_location_longitude), (float) latLong.longitude);
+                editor.commit();
+
+                // Tell the SyncAdapter that we've changed the location, so that we can update
+                // our UI with new values. We need to do this manually because we are responding
+                // to the PlacePicker widget result here instead of allowing the
+                // LocationEditTextPreference to handle these changes and invoke our callbacks.
+                Preference locationPreference = findPreference(getString(R.string.pref_key_location));
+                setPreferenceSummary(locationPreference, address);
+
+                // Add attributions for our new PlacePicker location.
+                if (mAttribution != null) {
+                    mAttribution.setVisibility(View.VISIBLE);
+                } else {
+                    // For pre-Honeycomb devices, we cannot add a footer, so we will use a snackbar
+                    View rootView = findViewById(android.R.id.content);
+                    Snackbar.make(rootView, getString(R.string.attribution_text),
+                            Snackbar.LENGTH_LONG).show();
+                }
+
+                SharedPrefsManager.resetLocationStatus(this);
+                SunshineSyncAdapter.syncImmediately(this);
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

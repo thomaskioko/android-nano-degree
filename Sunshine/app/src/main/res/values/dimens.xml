@@ -11,4 +11,52 @@
 
     <!-- Large Notification Icon Dimensions -->
     <dimen name="notification_large_icon_default">48dp</dimen>
+
+    <dimen name="forecast_detail_horizontal_padding">32dp</dimen>
+
+    <!-- Icon Sizes -->
+    <dimen name="today_icon">96dp</dimen>
+    <dimen name="list_icon">40dp</dimen>
+
+    <!-- Text Sizes - We are using DP here rather than SP because these are already large
+         font sizes, and going larger will cause lots of view problems.  This is only for
+         the large forecast numbers in the forecast list -->
+    <dimen name="forecast_text_size">32dp</dimen>
+
+    <!-- This is an odd width, but we're trying to match the font closely to keep things working
+         on devices that don't yet have Roboto -->
+    <dimen name="forecast_text_width">49dp</dimen>
+    <dimen name="forecast_temperature_space">8dp</dimen>
+
+    <!-- Extra Padding -->
+    <dimen name="detail_view_extra_padding">@dimen/abc_list_item_padding_horizontal_material</dimen>
+
+    <!-- Needed if we aren't including the Material Design Library -->
+    <dimen name="appbar_elevation">4dp</dimen>
+
+    <!-- The amount we want the details view to overlap the app bar -->
+    <dimen name="details_app_bar_overlap">24dp</dimen>
+
+    <!-- Help to make us tablet beautiful -->
+    <dimen name="list_item_extra_padding">0dp</dimen>
+    <dimen name="detail_view_padding">@dimen/abc_list_item_padding_horizontal_material</dimen>
+    <dimen name="forecast_detail_padding_wide">16dp</dimen>
+    <dimen name="detail_container_bottom_margin">@dimen/detail_view_padding</dimen>
+
+    <dimen name="detail_card_elevation">6dp</dimen>
+    <dimen name="landscape_forecast_view_width">360dp</dimen>
+    <dimen name="forecast_widget_text_size">24dp</dimen>
+    <dimen name="forecast_widget_text_width">38dp</dimen>
+
+    <!-- Today Widget -->
+    <dimen name="widget_today_default_width">110dp</dimen>
+    <dimen name="widget_today_default_height">40dp</dimen>
+    <dimen name="widget_today_min_resize_width">40dp</dimen>
+    <dimen name="widget_today_min_resize_height">@dimen/widget_today_default_height</dimen>
+    <dimen name="widget_today_large_width">220dp</dimen>
+
+    <dimen name="widget_detail_default_width">250dp</dimen>
+    <dimen name="widget_detail_default_height">180dp</dimen>
+    <dimen name="widget_detail_min_resize_width">220dp</dimen>
+    <dimen name="widget_detail_min_resize_height">@dimen/widget_detail_default_height</dimen>
 </resources>
