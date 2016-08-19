@@ -1,4 +1,4 @@
-package com.sam_chordas.android.stockhawk.touch_helper;
+package com.sam_chordas.android.stockhawk.interfaces;
 
 /**
  * Created by sam_chordas on 10/6/15.
@@ -6,7 +6,7 @@ package com.sam_chordas.android.stockhawk.touch_helper;
  * Interface for enabling swiping to delete
  */
 public interface ItemTouchHelperViewHolder {
-  void onItemSelected();
+    void onItemSelected();
 
-  void onItemClear();
+    void onItemClear();
 }

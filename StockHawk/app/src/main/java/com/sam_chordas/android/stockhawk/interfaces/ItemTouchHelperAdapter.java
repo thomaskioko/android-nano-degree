@@ -1,6 +1,4 @@
-package com.sam_chordas.android.stockhawk.touch_helper;
-
-import android.view.View;
+package com.sam_chordas.android.stockhawk.interfaces;
 
 /**
  * Created by sam_chordas on 10/6/15.
@@ -9,5 +7,5 @@ import android.view.View;
  */
 public interface ItemTouchHelperAdapter {
 
-  void onItemDismiss(int position);
+    void onItemDismiss(int position);
 }
