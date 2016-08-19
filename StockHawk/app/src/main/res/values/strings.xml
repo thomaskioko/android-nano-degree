@@ -1,13 +1,42 @@
 <resources>
-  <string name="app_name">Stock Hawk</string>
+    <string name="app_name" translatable="false">Stock Hawk</string>
 
-  <string name="action_example">Example action</string>
+    <string name="action_settings" translatable="true">Settings</string>
+    <string name="action_change_units" translatable="true">Change Units</string>
+    <string name="symbol_search" translatable="true">Symbol Search</string>
+    <string name="content_test" translatable="true">Search for a Stock Symbol</string>
+    <string name="input_hint" translatable="false">FB</string>
+    <string name="input_prefill"> </string>
+    <string name="network_toast" translatable="true">This app requires an internet connection</string>
+    <string name="no_internet_connection" translatable="true">No Internet Connection Please Connect to the Internet</string>
+    <string name="no_stocks_available" translatable="true">No Stocks Available, Please Add Stocks by clicking on +</string>
+    <string name="appwidget_text" translatable="true">Example</string>
+    <string name="add_widget" translatable="true">Add widget</string>
+    <string name="graph_content_description" translatable="true">Graph showing prices of the stock over time!</string>
 
-  <string name="action_settings">Settings</string>
-  <string name="action_change_units">Change Units</string>
-  <string name="symbol_search">Symbol Search</string>
-  <string name="content_test">Search for a Stock Symbol</string>
-  <string name="input_hint">FB</string>
-  <string name="input_prefill"></string>
-  <string name="network_toast">Uh-oh! This app requires an internet connection</string>
+    <string name="no_data_show" translatable="true">Can\'t show you data over time!</string>
+    <string name="retry" translatable="true">Retry</string>
+    <string name="empty_view_text" translatable="true">Stocks Data not available!</string>
+    <string name="data_error_json" translatable="true">Looks like it\'s our fault!</string>
+    <string name="data_no_internet" translatable="true">Internet Connection is required!</string>
+    <string name="data_error_parse" translatable="true">Unprecedented errors have happened!</string>
+    <string name="data_unknown_error" translatable="true">Can\'t identify the problem here!</string>
+    <string name="data_server_down" translatable="true">The Yahoo! Server is not responding as expected!</string>
+    <string name="data_no_error" translatable="true">Everything looks good!</string>
+
+    <string name="invalid_stock_symbol" translatable="true">Invalid Stock Symbol</string>
+    <string name="stock_already_saved" translatable="true">This stock is already saved!</string>
+    <string name="stock_symbol" translatable="true">Stock Symbol</string>
+    <string name="stock_name" translatable="true">Stock Name</string>
+    <string name="exchange_name" translatable="true">Exchange Name</string>
+    <string name="first_trade" translatable="true">First Trade</string>
+    <string name="last_trade" translatable="true">Last Trade</string>
+    <string name="currency" translatable="true">Currency</string>
+    <string name="bid_price" translatable="true">Bid Price</string>
+
+    <string name="loading_stock_data" translatable="true">Loading Stock Data…</string>
+    <string name="last_12month_comparision" translatable="true">Last 12 months stock comparison</string>
+
+    <!-- String placeholders. -->
+    <string name="symbol_details" translatable="false">%1$S - %2$S %3$S </string>
 </resources>

@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="material_blue_700">#1976D2</color>
-  <color name="material_blue_500">#2196F3</color>
-  <color name="material_red_700">#D50000</color>
-  <color name="material_green_700">#00C853</color>
+
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryDark">#388E3C</color>
+    <color name="colorAccent">#FF5722</color>
+    <color name="primary_light">#C8E6C9</color>
+
+    <!-- Text Colors-->
+    <color name="primary_text_color">#212121</color>
+    <color name="secondary_text_color">#757575</color>
+
+    <color name="divider_color">#BDBDBD</color>
+    <color name="white">#FFFF</color>
+
+
+    <color name="material_red_700">#D50000</color>
+    <color name="material_green_700">#00C853</color>
+    <color name="material_yellow_A200">#FFFF00</color>
+
+    <color name="widget_stock_down">#F44336</color>
+    <color name="widget_stock_up">#8BC34A</color>
+    <color name="widget_text_color">#212121</color>
 </resources>
