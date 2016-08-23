@@ -12,6 +12,7 @@
     <string name="no_stocks_available" translatable="true">No Stocks Available, Please Add Stocks by clicking on +</string>
     <string name="appwidget_text" translatable="true">Example</string>
     <string name="add_widget" translatable="true">Add widget</string>
+    <string name="add_stock" translatable="true">Add stock symbol</string>
     <string name="graph_content_description" translatable="true">Graph showing prices of the stock over time!</string>
 
     <string name="no_data_show" translatable="true">Can\'t show you data over time!</string>
