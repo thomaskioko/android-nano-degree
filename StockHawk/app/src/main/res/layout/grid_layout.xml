@@ -1,0 +1,156 @@
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginEnd="5dp"
+    android:layout_marginStart="5dp"
+    android:background="@android:color/white"
+    app:columnCount="2">
+
+    <android.support.v7.widget.Space
+        app:layout_columnSpan="2"
+        app:layout_columnWeight="1"
+        app:layout_rowWeight="1" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:gravity="start"
+        android:text="@string/stock_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/primary_text_color"
+        android:fontFamily="sans-serif-condensed"
+        app:layout_columnWeight="1" />
+
+    <TextView
+        android:id="@+id/tvStockName"
+        android:layout_width="0dp"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center_horizontal"
+        android:textColor="@color/secondary_text_color"
+        app:layout_columnWeight="1"
+        tools:text="10" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="start"
+        android:text="@string/stock_symbol"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/primary_text_color"
+        app:layout_columnWeight="1" />
+
+    <TextView
+        android:id="@+id/tvStockSymbol"
+        android:layout_width="0dp"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center_horizontal"
+        android:textColor="@color/secondary_text_color"
+        app:layout_columnWeight="1"
+        tools:text="10" />
+
+
+    <TextView
+        android:layout_width="0dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="start"
+        android:text="@string/exchange_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/primary_text_color"
+        app:layout_columnWeight="1" />
+
+    <TextView
+        android:id="@+id/tvExchangeName"
+        android:layout_width="0dp"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center_horizontal"
+        android:textColor="@color/secondary_text_color"
+        app:layout_columnWeight="1"
+        tools:text="10" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="start"
+        android:text="@string/first_trade"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/primary_text_color"
+        app:layout_columnWeight="1" />
+
+    <TextView
+        android:id="@+id/tvfirstTrade"
+        android:layout_width="0dp"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center_horizontal"
+        android:textColor="@color/secondary_text_color"
+        app:layout_columnWeight="1"
+        tools:text="10" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="start"
+        android:text="@string/last_trade"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/primary_text_color"
+        app:layout_columnWeight="1" />
+
+    <TextView
+        android:id="@+id/tvlastTrade"
+        android:layout_width="0dp"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center_horizontal"
+        android:textColor="@color/secondary_text_color"
+        app:layout_columnWeight="1"
+        tools:text="10" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="start"
+        android:text="@string/currency"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/primary_text_color"
+        app:layout_columnWeight="1" />
+
+    <TextView
+        android:id="@+id/tvCurrency"
+        android:layout_width="0dp"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center_horizontal"
+        android:textColor="@color/secondary_text_color"
+        app:layout_columnWeight="1"
+        tools:text="10" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="start"
+        android:text="@string/bid_price"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/primary_text_color"
+        app:layout_columnWeight="1" />
+
+    <TextView
+        android:id="@+id/tvBidPrice"
+        android:layout_width="0dp"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center_horizontal"
+        android:textColor="@color/secondary_text_color"
+        app:layout_columnWeight="1"
+        tools:text="10" />
+
+
+    <android.support.v7.widget.Space
+        app:layout_columnSpan="2"
+        app:layout_columnWeight="1"
+        app:layout_rowWeight="1" />
+
+</android.support.v7.widget.GridLayout>
