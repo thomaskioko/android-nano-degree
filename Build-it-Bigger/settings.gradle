@@ -1,0 +1,3 @@
+include ':app', ':jokedisplay', ':backend', ':jokeproviderlibrary'
+project(':jokedisplay').projectDir = new File('Library/jokedisplay')
+project(':jokeproviderlibrary').projectDir = new File('Library/jokeproviderlibrary')
