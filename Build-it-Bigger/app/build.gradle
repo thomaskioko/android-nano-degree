@@ -11,18 +11,84 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    productFlavors {
+        free {
+            applicationId "com.udacity.gradle.builditbigger.free"
+        }
+        paid {
+            applicationId "com.udacity.gradle.builditbigger.paid"
+        }
+    }
+
     buildTypes {
+        debug {
+            buildConfigField "String", "SERVER_URL", "\"https://build-it-bigger-141220.appspot.com/_ah/api/\""
+        }
+
         release {
+            buildConfigField "String", "SERVER_URL", "\"https://build-it-bigger-141220.appspot.com/_ah/api/\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    // Added for AdMob
-    compile 'com.google.android.gms:play-services-ads:9.4.0'
+    compile project(path: ':backend', configuration: 'android-endpoints')
+    compile project(':jokedisplay')
+
+    //Testing
+    androidTestCompile('com.android.support.test:runner:0.5', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestCompile('com.android.support.test:rules:0.5', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.1', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.google.code.findbugs:jsr305:2.0.1'
+    compile 'com.jakewharton:butterknife:7.0.0'
+
+    //Use this dependency for the free version
+    freeCompile 'com.google.android.gms:play-services-ads:9.4.0'
 }
+
+//Task to start AppEngine server
+task startAppEngineServer(dependsOn: [':backend:appengineStop', ':backend:appengineRun']) {
+    tasks.getByPath(':backend:appengineRun').mustRunAfter ':backend:appengineStop'
+
+    project(":backend").afterEvaluate { backend ->
+        backend.extensions.appengine.daemon = true
+    }
+    doLast {
+        println "Server has been started."
+    }
+}
+
+//Task to stop AppEngine server
+task stopAppEngineServer(dependsOn: ":backend:appengineStop") {
+    project(":backend").afterEvaluate { backend ->
+        backend.extensions.appengine.daemon = true
+    }
+    doLast {
+        println "Server has been stopped."
+    }
+}
+
+
