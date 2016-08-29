@@ -1,0 +1,7 @@
+<resources>
+
+    <dimen name="material_layout_app_bar_height">320dp</dimen>
+    <dimen name="expanded_toolbar_height">80dp</dimen>
+    <dimen name="expanded_toolbar_title_margin_bottom">40dp</dimen>
+
+</resources>
