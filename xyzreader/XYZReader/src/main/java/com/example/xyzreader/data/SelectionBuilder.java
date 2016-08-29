@@ -19,17 +19,17 @@
  * -Imported from AOSP frameworks/base/core/java/com/android/internal/content
  * -Changed package name
  */
-
 package com.example.xyzreader.data;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Helper for building selection clauses for {@link SQLiteDatabase}. Each
@@ -45,17 +45,18 @@ public class SelectionBuilder {
     /**
      * Reset any internal state, allowing this builder to be recycled.
      */
+    @SuppressWarnings("unused")
     public SelectionBuilder reset() {
         mTable = null;
-		if (mProjectionMap != null) {
-			mProjectionMap.clear();
-		}
-		if (mSelection != null) {
-			mSelection.setLength(0);
-		}
-		if (mSelectionArgs != null) {
-			mSelectionArgs.clear();
-		}
+        if (mProjectionMap != null) {
+            mProjectionMap.clear();
+        }
+        if (mSelection != null) {
+            mSelection.setLength(0);
+        }
+        if (mSelectionArgs != null) {
+            mSelectionArgs.clear();
+        }
         return this;
     }
 
@@ -81,10 +82,8 @@ public class SelectionBuilder {
 
         mSelection.append("(").append(selection).append(")");
         if (selectionArgs != null) {
-        	ensureSelectionArgs();
-            for (String arg : selectionArgs) {
-                mSelectionArgs.add(arg);
-            }
+            ensureSelectionArgs();
+            Collections.addAll(mSelectionArgs, selectionArgs);
         }
 
         return this;
@@ -102,31 +101,33 @@ public class SelectionBuilder {
     }
 
     private void ensureProjectionMap() {
-		if (mProjectionMap == null) {
-			mProjectionMap = new HashMap<String, String>();
-		}
+        if (mProjectionMap == null) {
+            mProjectionMap = new HashMap<>();
+        }
     }
 
     private void ensureSelection(int lengthHint) {
-    	if (mSelection == null) {
-    		mSelection = new StringBuilder(lengthHint + 8);
-    	}
+        if (mSelection == null) {
+            mSelection = new StringBuilder(lengthHint + 8);
+        }
     }
 
     private void ensureSelectionArgs() {
-    	if (mSelectionArgs == null) {
-    		mSelectionArgs = new ArrayList<String>();
-    	}
+        if (mSelectionArgs == null) {
+            mSelectionArgs = new ArrayList<>();
+        }
     }
 
+    @SuppressWarnings("unused")
     public SelectionBuilder mapToTable(String column, String table) {
-    	ensureProjectionMap();
+        ensureProjectionMap();
         mProjectionMap.put(column, table + "." + column);
         return this;
     }
 
+    @SuppressWarnings("unused")
     public SelectionBuilder map(String fromColumn, String toClause) {
-    	ensureProjectionMap();
+        ensureProjectionMap();
         mProjectionMap.put(fromColumn, toClause + " AS " + fromColumn);
         return this;
     }
@@ -137,11 +138,11 @@ public class SelectionBuilder {
      * @see #getSelectionArgs()
      */
     public String getSelection() {
-    	if (mSelection != null) {
+        if (mSelection != null) {
             return mSelection.toString();
-    	} else {
-    		return null;
-    	}
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -150,15 +151,15 @@ public class SelectionBuilder {
      * @see #getSelection()
      */
     public String[] getSelectionArgs() {
-    	if (mSelectionArgs != null) {
+        if (mSelectionArgs != null) {
             return mSelectionArgs.toArray(new String[mSelectionArgs.size()]);
-    	} else {
-    		return null;
-    	}
+        } else {
+            return null;
+        }
     }
 
     private void mapColumns(String[] columns) {
-    	if (mProjectionMap == null) return;
+        if (mProjectionMap == null) return;
         for (int i = 0; i < columns.length; i++) {
             final String target = mProjectionMap.get(columns[i]);
             if (target != null) {
@@ -184,7 +185,7 @@ public class SelectionBuilder {
      * Execute query using the current internal state as {@code WHERE} clause.
      */
     public Cursor query(SQLiteDatabase db, String[] columns, String groupBy,
-            String having, String orderBy, String limit) {
+                        String having, String orderBy, String limit) {
         assertTable();
         if (columns != null) mapColumns(columns);
         return db.query(mTable, columns, getSelection(), getSelectionArgs(), groupBy, having,
