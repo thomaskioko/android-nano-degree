@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="app_name">XYZ Reader</string>
+    <string name="action_share" translatable="true">Share</string>
+
+    <!-- For Shared Element Transitions -->
+    <string name="transition_photo">transition_photo</string>
+
+</resources>
