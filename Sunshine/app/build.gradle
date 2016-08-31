@@ -38,4 +38,5 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
+    wearApp project(':sunshinewatchface')
 }
