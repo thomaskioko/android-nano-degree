@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="clock_text_size">50dp</dimen>
+    <dimen name="date_text_size">18dp</dimen>
+    <dimen name="temp_text_size">25dp</dimen>
+    <dimen name="clock_x_offset">5dp</dimen>
+    <dimen name="date_x_offset">0dp</dimen>
+    <dimen name="low_temp_x_offset">20dp</dimen>
+    <dimen name="weather_icon_x_offset">60dp</dimen>
+    <dimen name="clock_y_offset">70dp</dimen>
+    <dimen name="date_y_offset">100dp</dimen>
+    <dimen name="weather_y_offset">150dp</dimen>
+    <dimen name="weather_icon_y_offset">120dp</dimen>
+    <dimen name="divider_y_offset_to_center">10dp</dimen>
+    <dimen name="divider_length">50dp</dimen>
+    <dimen name="divider_thickness">1dp</dimen>
+</resources>
