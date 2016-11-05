@@ -64,7 +64,7 @@ In this project, you will productionize an app, taking them from a functional st
  <table>
 <td>
     <p align="center">
-      <img src="https://github.com/kioko/android-nano-degree/tree/master/StockHawk/art/DetailScreen.png?raw=true" alt="Final Result" width="250"/>
+      <img src="https://github.com/kioko/android-nano-degree/blob/master/StockHawk/art/DetailScreen.png?raw=true" alt="Final Result" width="250"/>
     </p>
   </td>
  
