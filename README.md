@@ -60,8 +60,17 @@ In this project, you will productionize an app, taking them from a functional st
 1. Set up dependencies.
 2. Display data in a graph.
 3. Create widgets.
- 
 
+ <table>
+<td>
+    <p align="center">
+      <img src="https://github.com/kioko/android-nano-degree/tree/master/StockHawk/art/DetailScreen.png?raw=true" alt="Final Result" width="250"/>
+    </p>
+  </td>
+ 
+</tr>
+</table>
+ 
 
 ###[Project 3: Build It Bigger](https://github.com/kioko/android-nano-degree/tree/master/Build-it-Bigger)
 
